@@ -16,6 +16,7 @@
       --green2: #243d33;
       --yellow: #d7a900;
       --danger: #ff6b6b;
+      --cyan: #20c7c9;
     }
 
     * {
@@ -49,6 +50,11 @@
     h1 {
       margin: 6px 0 4px;
       font-size: 30px;
+    }
+
+    h2 {
+      margin: 8px 0 10px;
+      font-size: 24px;
     }
 
     .sub {
@@ -159,6 +165,7 @@
       color: var(--muted);
       font-weight: 700;
       min-height: 24px;
+      line-height: 1.5;
     }
 
     .status.ok {
@@ -167,6 +174,28 @@
 
     .status.ng {
       color: var(--danger);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .secondary {
+      border: 1px solid var(--green);
+      color: var(--green);
+      background: transparent;
+      border-radius: 999px;
+      padding: 13px;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .secondary.cyan {
+      border-color: var(--cyan);
+      color: var(--cyan);
     }
 
     .totals {
@@ -203,22 +232,6 @@
       text-align: right;
     }
 
-    .small-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .secondary {
-      flex: 1;
-      border: 1px solid var(--green);
-      color: var(--green);
-      background: transparent;
-      border-radius: 999px;
-      padding: 12px;
-      font-weight: 800;
-    }
-
     .history {
       margin-top: 12px;
       color: var(--muted);
@@ -229,6 +242,46 @@
     .history-item {
       border-top: 1px solid var(--line);
       padding: 10px 0;
+    }
+
+    .favorites {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .favorite-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: var(--card2);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .favorite-name {
+      font-size: 17px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .favorite-macro {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-block;
+      color: var(--green);
+      background: var(--green2);
+      border: 1px solid rgba(72, 209, 122, 0.55);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin-left: 6px;
     }
   </style>
 </head>
@@ -286,7 +339,20 @@
       </div>
 
       <button id="saveBtn" class="save" type="button">食事を保存</button>
+
+      <div class="actions">
+        <button id="saveFavoriteBtn" class="secondary" type="button">お気に入り登録</button>
+        <button id="refreshFavoritesBtn" class="secondary cyan" type="button">お気に入り更新</button>
+      </div>
+
       <div id="status" class="status"></div>
+    </section>
+
+    <section class="card">
+      <div class="eyebrow">FAVORITES</div>
+      <h2>お気に入り食材</h2>
+      <div class="sub">タップすると入力欄に反映します。</div>
+      <div id="favorites" class="favorites"></div>
     </section>
 
     <section class="card">
@@ -316,7 +382,7 @@
         </div>
       </div>
 
-      <div class="small-actions">
+      <div class="actions">
         <button id="clearLocalBtn" class="secondary" type="button">今日の表示をリセット</button>
       </div>
 
@@ -325,9 +391,10 @@
   </div>
 
   <script>
-    const GAS_URL = 'https://script.google.com/macros/s/AKfycbz3vYVAXkntz1Qq4g99k2U-fsxZQ7cV-sybjqL2zXM2LEGE97apSjHz9ccTEJ2DejyM/exec';
+    const GAS_URL = 'GAS_URL_HERE';
 
     let selectedMeal = '朝食';
+    let favoritesCache = [];
 
     const todayKey = () => {
       const d = new Date();
@@ -340,6 +407,43 @@
     const numberValue = (id) => {
       const value = document.getElementById(id).value;
       return value === '' ? 0 : Number(value);
+    };
+
+    const setStatus = (message, type = '') => {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = type ? `status ${type}` : 'status';
+    };
+
+    const getCurrentInput = () => {
+      const food = document.getElementById('food').value.trim();
+
+      return {
+        date: todayKey(),
+        mealType: selectedMeal,
+        type: '食事',
+        food,
+        name: food,
+        calories: numberValue('calories'),
+        protein: numberValue('protein'),
+        fat: numberValue('fat'),
+        carbs: numberValue('carbs')
+      };
+    };
+
+    const fillInput = (item) => {
+      document.getElementById('food').value = item.name || '';
+      document.getElementById('calories').value = item.calories || '';
+      document.getElementById('protein').value = item.protein || '';
+      document.getElementById('fat').value = item.fat || '';
+      document.getElementById('carbs').value = item.carbs || '';
+
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
+      setStatus(`${item.name} を入力欄に入れました。`, 'ok');
     };
 
     const getLogs = () => {
@@ -376,6 +480,35 @@
       `).join('');
     };
 
+    const renderFavorites = () => {
+      const box = document.getElementById('favorites');
+
+      if (!favoritesCache.length) {
+        box.innerHTML = '<div class="sub">お気に入りがまだありません。</div>';
+        return;
+      }
+
+      box.innerHTML = favoritesCache.map((item, index) => `
+        <button class="favorite-btn" type="button" data-index="${index}">
+          <div class="favorite-name">
+            ${escapeHtml(item.name)}
+            <span class="pill">${item.calories || 0} kcal</span>
+          </div>
+          <div class="favorite-macro">
+            P ${item.protein || 0}g / F ${item.fat || 0}g / C ${item.carbs || 0}g
+          </div>
+          ${item.memo ? `<div class="favorite-macro">${escapeHtml(item.memo)}</div>` : ''}
+        </button>
+      `).join('');
+
+      document.querySelectorAll('.favorite-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = Number(btn.dataset.index);
+          fillInput(favoritesCache[index]);
+        });
+      });
+    };
+
     const escapeHtml = (str) => {
       return String(str)
         .replaceAll('&', '&amp;')
@@ -383,6 +516,36 @@
         .replaceAll('>', '&gt;')
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
+    };
+
+    const postToGas = async (payload) => {
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      return await res.json();
+    };
+
+    const loadFavorites = async () => {
+      try {
+        setStatus('お気に入りを読み込み中...');
+        const result = await postToGas({
+          action: 'getFavorites'
+        });
+
+        if (!result.ok) {
+          throw new Error(JSON.stringify(result));
+        }
+
+        favoritesCache = result.favorites || [];
+        renderFavorites();
+        setStatus('お気に入りを更新しました。', 'ok');
+
+      } catch (error) {
+        console.error(error);
+        setStatus('お気に入りの読み込みに失敗しました。', 'ng');
+      }
     };
 
     document.querySelectorAll('.meal-btn').forEach(btn => {
@@ -395,39 +558,22 @@
 
     document.getElementById('saveBtn').addEventListener('click', async () => {
       const saveBtn = document.getElementById('saveBtn');
-      const status = document.getElementById('status');
 
-      const date = todayKey();
-      const food = document.getElementById('food').value.trim();
+      const data = getCurrentInput();
 
-      if (!food) {
-        status.textContent = '食べたものを入力してください。';
-        status.className = 'status ng';
+      if (!data.food) {
+        setStatus('食べたものを入力してください。', 'ng');
         return;
       }
 
-      const data = {
-        date,
-        mealType: selectedMeal,
-        type: '食事',
-        food,
-        calories: numberValue('calories'),
-        protein: numberValue('protein'),
-        fat: numberValue('fat'),
-        carbs: numberValue('carbs')
-      };
-
       saveBtn.disabled = true;
-      status.textContent = '保存中...';
-      status.className = 'status';
+      setStatus('保存中...');
 
       try {
-        const res = await fetch(GAS_URL, {
-          method: 'POST',
-          body: JSON.stringify(data)
+        const result = await postToGas({
+          action: 'saveMeal',
+          ...data
         });
-
-        const result = await res.json();
 
         if (!result.ok) {
           throw new Error(JSON.stringify(result));
@@ -445,17 +591,55 @@
 
         renderTotals();
 
-        status.textContent = 'Notionに保存しました。';
-        status.className = 'status ok';
+        setStatus('Notionに保存しました。', 'ok');
 
       } catch (error) {
         console.error(error);
-        status.textContent = '保存に失敗しました。GAS URLやNotion設定を確認してください。';
-        status.className = 'status ng';
+        setStatus('保存に失敗しました。GAS URLやNotion設定を確認してください。', 'ng');
       } finally {
         saveBtn.disabled = false;
       }
     });
+
+    document.getElementById('saveFavoriteBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('saveFavoriteBtn');
+      const data = getCurrentInput();
+
+      if (!data.food) {
+        setStatus('お気に入り名として、食べたものを入力してください。', 'ng');
+        return;
+      }
+
+      btn.disabled = true;
+      setStatus('お気に入り登録中...');
+
+      try {
+        const result = await postToGas({
+          action: 'saveFavorite',
+          name: data.food,
+          calories: data.calories,
+          protein: data.protein,
+          fat: data.fat,
+          carbs: data.carbs,
+          memo: ''
+        });
+
+        if (!result.ok) {
+          throw new Error(JSON.stringify(result));
+        }
+
+        setStatus('お気に入りに登録しました。', 'ok');
+        await loadFavorites();
+
+      } catch (error) {
+        console.error(error);
+        setStatus('お気に入り登録に失敗しました。', 'ng');
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('refreshFavoritesBtn').addEventListener('click', loadFavorites);
 
     document.getElementById('clearLocalBtn').addEventListener('click', () => {
       const today = todayKey();
@@ -465,6 +649,7 @@
     });
 
     renderTotals();
+    loadFavorites();
   </script>
 </body>
 </html>
