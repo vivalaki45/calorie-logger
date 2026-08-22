@@ -326,6 +326,26 @@
       <h1>食事記録</h1>
       <div class="sub">GitHub Pages → GAS → Notion DB</div>
     </div>
+    
+ <section class="card">
+      <button id="favoritesToggle" class="toggle-title" type="button">
+        <span id="favoritesArrow">▶</span>
+        <span>お気に入り食材</span>
+      </button>
+
+      <div id="favoritesPanel" class="favorites-panel" hidden>
+        <div class="sub">タップすると入力欄に反映します。選択後は自動で閉じます。</div>
+
+        <input
+          id="favoriteSearch"
+          class="favorite-search"
+          type="search"
+          placeholder="お気に入りを検索"
+        >
+
+        <div id="favorites" class="favorites"></div>
+      </div>
+    </section>
 
     <section class="card">
       <div class="eyebrow">INPUT</div>
@@ -383,26 +403,6 @@
       </div>
 
       <div id="status" class="status"></div>
-    </section>
-
-    <section class="card">
-      <button id="favoritesToggle" class="toggle-title" type="button">
-        <span id="favoritesArrow">▶</span>
-        <span>お気に入り食材</span>
-      </button>
-
-      <div id="favoritesPanel" class="favorites-panel" hidden>
-        <div class="sub">タップすると入力欄に反映します。選択後は自動で閉じます。</div>
-
-        <input
-          id="favoriteSearch"
-          class="favorite-search"
-          type="search"
-          placeholder="お気に入りを検索"
-        >
-
-        <div id="favorites" class="favorites"></div>
-      </div>
     </section>
 
     <section class="card">
