@@ -60,6 +60,7 @@
     .sub {
       color: var(--muted);
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .card {
@@ -156,7 +157,8 @@
       font-weight: 900;
     }
 
-    .save:disabled {
+    .save:disabled,
+    .secondary:disabled {
       opacity: 0.6;
     }
 
@@ -166,6 +168,7 @@
       font-weight: 700;
       min-height: 24px;
       line-height: 1.5;
+      word-break: break-word;
     }
 
     .status.ok {
@@ -196,6 +199,76 @@
     .secondary.cyan {
       border-color: var(--cyan);
       color: var(--cyan);
+    }
+
+    .toggle-title {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 24px;
+      font-weight: 900;
+      text-align: left;
+    }
+
+    #favoritesArrow {
+      color: var(--green);
+      font-size: 20px;
+      width: 24px;
+      flex: 0 0 24px;
+    }
+
+    .favorites-panel {
+      margin-top: 14px;
+    }
+
+    .favorite-search {
+      margin-top: 12px;
+      margin-bottom: 12px;
+    }
+
+    .favorites {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .favorite-btn {
+      width: 100%;
+      text-align: left;
+      border: 1px solid var(--line);
+      background: var(--card2);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 14px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .favorite-name {
+      font-size: 17px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .favorite-macro {
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-block;
+      color: var(--green);
+      background: var(--green2);
+      border: 1px solid rgba(72, 209, 122, 0.55);
+      border-radius: 999px;
+      padding: 4px 8px;
+      font-size: 12px;
+      margin-left: 6px;
     }
 
     .totals {
@@ -243,48 +316,9 @@
       border-top: 1px solid var(--line);
       padding: 10px 0;
     }
-
-    .favorites {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .favorite-btn {
-      width: 100%;
-      text-align: left;
-      border: 1px solid var(--line);
-      background: var(--card2);
-      color: var(--text);
-      border-radius: 18px;
-      padding: 14px;
-      font-size: 15px;
-      line-height: 1.5;
-    }
-
-    .favorite-name {
-      font-size: 17px;
-      font-weight: 900;
-      margin-bottom: 4px;
-    }
-
-    .favorite-macro {
-      color: var(--muted);
-      font-weight: 700;
-    }
-
-    .pill {
-      display: inline-block;
-      color: var(--green);
-      background: var(--green2);
-      border: 1px solid rgba(72, 209, 122, 0.55);
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: 12px;
-      margin-left: 6px;
-    }
   </style>
 </head>
+
 <body>
   <div class="app">
     <div class="header">
@@ -315,6 +349,7 @@
             <span class="unit">kcal</span>
           </div>
         </div>
+
         <div>
           <label for="protein">タンパク質</label>
           <div class="unit-wrap">
@@ -322,6 +357,7 @@
             <span class="unit">g</span>
           </div>
         </div>
+
         <div>
           <label for="fat">脂質</label>
           <div class="unit-wrap">
@@ -329,6 +365,7 @@
             <span class="unit">g</span>
           </div>
         </div>
+
         <div>
           <label for="carbs">炭水化物</label>
           <div class="unit-wrap">
@@ -349,10 +386,23 @@
     </section>
 
     <section class="card">
-      <div class="eyebrow">FAVORITES</div>
-      <h2>お気に入り食材</h2>
-      <div class="sub">タップすると入力欄に反映します。</div>
-      <div id="favorites" class="favorites"></div>
+      <button id="favoritesToggle" class="toggle-title" type="button">
+        <span id="favoritesArrow">▶</span>
+        <span>お気に入り食材</span>
+      </button>
+
+      <div id="favoritesPanel" class="favorites-panel" hidden>
+        <div class="sub">タップすると入力欄に反映します。選択後は自動で閉じます。</div>
+
+        <input
+          id="favoriteSearch"
+          class="favorite-search"
+          type="search"
+          placeholder="お気に入りを検索"
+        >
+
+        <div id="favorites" class="favorites"></div>
+      </div>
     </section>
 
     <section class="card">
@@ -365,16 +415,19 @@
           <div class="total-value"><span id="totalCalories">0</span> kcal</div>
           <div class="target">2547 kcal</div>
         </div>
+
         <div class="total-box">
           <div class="total-label">タンパク質</div>
           <div class="total-value"><span id="totalProtein">0</span> g</div>
           <div class="target">180 g</div>
         </div>
+
         <div class="total-box">
           <div class="total-label">脂質</div>
           <div class="total-value"><span id="totalFat">0</span> g</div>
           <div class="target">70 g</div>
         </div>
+
         <div class="total-box">
           <div class="total-label">炭水化物</div>
           <div class="total-value"><span id="totalCarbs">0</span> g</div>
@@ -395,6 +448,8 @@
 
     let selectedMeal = '朝食';
     let favoritesCache = [];
+    let favoritesOpen = false;
+    let favoriteSearchText = '';
 
     const todayKey = () => {
       const d = new Date();
@@ -472,6 +527,7 @@
       document.getElementById('totalCarbs').textContent = total.carbs.toFixed(1).replace('.0', '');
 
       const history = document.getElementById('history');
+
       history.innerHTML = logs.slice().reverse().map(log => `
         <div class="history-item">
           <strong>${log.mealType}</strong>：${escapeHtml(log.food || '')}<br>
@@ -482,13 +538,20 @@
 
     const renderFavorites = () => {
       const box = document.getElementById('favorites');
+      const keyword = favoriteSearchText.trim().toLowerCase();
 
-      if (!favoritesCache.length) {
-        box.innerHTML = '<div class="sub">お気に入りがまだありません。</div>';
+      const filtered = favoritesCache.filter(item => {
+        const name = String(item.name || '').toLowerCase();
+        const memo = String(item.memo || '').toLowerCase();
+        return !keyword || name.includes(keyword) || memo.includes(keyword);
+      });
+
+      if (!filtered.length) {
+        box.innerHTML = '<div class="sub">該当するお気に入りがありません。</div>';
         return;
       }
 
-      box.innerHTML = favoritesCache.map((item, index) => `
+      box.innerHTML = filtered.map((item, index) => `
         <button class="favorite-btn" type="button" data-index="${index}">
           <div class="favorite-name">
             ${escapeHtml(item.name)}
@@ -504,9 +567,20 @@
       document.querySelectorAll('.favorite-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const index = Number(btn.dataset.index);
-          fillInput(favoritesCache[index]);
+          fillInput(filtered[index]);
+          setFavoritesOpen(false);
         });
       });
+    };
+
+    const setFavoritesOpen = (open) => {
+      favoritesOpen = open;
+
+      const panel = document.getElementById('favoritesPanel');
+      const arrow = document.getElementById('favoritesArrow');
+
+      panel.hidden = !favoritesOpen;
+      arrow.textContent = favoritesOpen ? '▼' : '▶';
     };
 
     const escapeHtml = (str) => {
@@ -530,6 +604,7 @@
     const loadFavorites = async () => {
       try {
         setStatus('お気に入りを読み込み中...');
+
         const result = await postToGas({
           action: 'getFavorites'
         });
@@ -558,7 +633,6 @@
 
     document.getElementById('saveBtn').addEventListener('click', async () => {
       const saveBtn = document.getElementById('saveBtn');
-
       const data = getCurrentInput();
 
       if (!data.food) {
@@ -590,12 +664,12 @@
         document.getElementById('carbs').value = '';
 
         renderTotals();
-
         setStatus('Notionに保存しました。', 'ok');
 
       } catch (error) {
         console.error(error);
         setStatus('保存に失敗しました。GAS URLやNotion設定を確認してください。', 'ng');
+
       } finally {
         saveBtn.disabled = false;
       }
@@ -629,17 +703,36 @@
         }
 
         setStatus('お気に入りに登録しました。', 'ok');
+
         await loadFavorites();
+        setFavoritesOpen(true);
 
       } catch (error) {
         console.error(error);
         setStatus('お気に入り登録に失敗しました。', 'ng');
+
       } finally {
         btn.disabled = false;
       }
     });
 
-    document.getElementById('refreshFavoritesBtn').addEventListener('click', loadFavorites);
+    document.getElementById('refreshFavoritesBtn').addEventListener('click', async () => {
+      setFavoritesOpen(true);
+      await loadFavorites();
+    });
+
+    document.getElementById('favoritesToggle').addEventListener('click', async () => {
+      setFavoritesOpen(!favoritesOpen);
+
+      if (favoritesOpen && favoritesCache.length === 0) {
+        await loadFavorites();
+      }
+    });
+
+    document.getElementById('favoriteSearch').addEventListener('input', (e) => {
+      favoriteSearchText = e.target.value;
+      renderFavorites();
+    });
 
     document.getElementById('clearLocalBtn').addEventListener('click', () => {
       const today = todayKey();
@@ -649,7 +742,7 @@
     });
 
     renderTotals();
-    loadFavorites();
+    setFavoritesOpen(false);
   </script>
 </body>
 </html>
