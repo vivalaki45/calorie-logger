@@ -601,27 +601,32 @@
       return await res.json();
     };
 
-    const loadFavorites = async () => {
-      try {
-        setStatus('お気に入りを読み込み中...');
+    const loadFavorites = async (showMessage = false) => {
+  try {
+    if (showMessage) {
+      setStatus('お気に入りを読み込み中...');
+    }
 
-        const result = await postToGas({
-          action: 'getFavorites'
-        });
+    const result = await postToGas({
+      action: 'getFavorites'
+    });
 
-        if (!result.ok) {
-          throw new Error(JSON.stringify(result));
-        }
+    if (!result.ok) {
+      throw new Error(JSON.stringify(result));
+    }
 
-        favoritesCache = result.favorites || [];
-        renderFavorites();
-        setStatus('お気に入りを更新しました。', 'ok');
+    favoritesCache = result.favorites || [];
+    renderFavorites();
 
-      } catch (error) {
-        console.error(error);
-        setStatus('お気に入りの読み込みに失敗しました。', 'ng');
-      }
-    };
+    if (showMessage) {
+      setStatus('お気に入りを更新しました。', 'ok');
+    }
+
+  } catch (error) {
+    console.error(error);
+    setStatus('お気に入りの読み込みに失敗しました。', 'ng');
+  }
+};
 
     document.querySelectorAll('.meal-btn').forEach(btn => {
       btn.addEventListener('click', () => {
