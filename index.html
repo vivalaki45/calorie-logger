@@ -431,9 +431,8 @@
       </div>
 
       <div class="actions">
-        <button id="refreshTotalsBtn" class="secondary cyan" type="button">Notionから合計更新</button>
-        <button id="clearLocalBtn" class="secondary" type="button">表示をリセット</button>
-      </div>
+  <button id="refreshTotalsBtn" class="secondary cyan" type="button">合計更新</button>
+</div>
 
       <div id="history" class="history"></div>
     </section>
@@ -777,14 +776,6 @@
     if (refreshTotalsBtn) {
       refreshTotalsBtn.addEventListener('click', async () => {
         await loadTodayTotals(true);
-      });
-    }
-
-    const clearLocalBtn = document.getElementById('clearLocalBtn');
-    if (clearLocalBtn) {
-      clearLocalBtn.addEventListener('click', () => {
-        renderTotals([]);
-        setStatus('表示をリセットしました。Notionの記録は消していません。', 'ok');
       });
     }
 
