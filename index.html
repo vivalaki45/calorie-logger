@@ -52,11 +52,6 @@
       font-size: 30px;
     }
 
-    h2 {
-      margin: 8px 0 10px;
-      font-size: 24px;
-    }
-
     .sub {
       color: var(--muted);
       font-size: 14px;
@@ -80,7 +75,7 @@
       font-size: 14px;
     }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       border: 1px solid var(--line);
       background: var(--card2);
@@ -326,8 +321,8 @@
       <h1>食事記録</h1>
       <div class="sub">GitHub Pages → GAS → Notion DB</div>
     </div>
-    
- <section class="card">
+
+    <section class="card">
       <button id="favoritesToggle" class="toggle-title" type="button">
         <span id="favoritesArrow">▶</span>
         <span>お気に入り食材</span>
@@ -436,9 +431,9 @@
       </div>
 
       <div class="actions">
-  <button id="refreshTotalsBtn" class="secondary cyan" type="button">Notionから合計更新</button>
-  <button id="clearLocalBtn" class="secondary" type="button">今日の表示をリセット</button>
-</div>
+        <button id="refreshTotalsBtn" class="secondary cyan" type="button">Notionから合計更新</button>
+        <button id="clearLocalBtn" class="secondary" type="button">表示をリセット</button>
+      </div>
 
       <div id="history" class="history"></div>
     </section>
@@ -467,8 +462,27 @@
 
     const setStatus = (message, type = '') => {
       const status = document.getElementById('status');
+      if (!status) return;
       status.textContent = message;
       status.className = type ? `status ${type}` : 'status';
+    };
+
+    const escapeHtml = (str) => {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    };
+
+    const postToGas = async (payload) => {
+      const res = await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+
+      return await res.json();
     };
 
     const getCurrentInput = () => {
@@ -487,6 +501,14 @@
       };
     };
 
+    const clearInput = () => {
+      document.getElementById('food').value = '';
+      document.getElementById('calories').value = '';
+      document.getElementById('protein').value = '';
+      document.getElementById('fat').value = '';
+      document.getElementById('carbs').value = '';
+    };
+
     const fillInput = (item) => {
       document.getElementById('food').value = item.name || '';
       document.getElementById('calories').value = item.calories || '';
@@ -502,40 +524,17 @@
       setStatus(`${item.name} を入力欄に入れました。`, 'ok');
     };
 
-    const getLogs = () => {
-      return JSON.parse(localStorage.getItem('calorieLogs') || '[]');
-    };
+    const renderTotals = (items = []) => {
+      const targetItems = Array.isArray(items) ? items : [];
 
-    const saveLogs = (logs) => {
-      localStorage.setItem('calorieLogs', JSON.stringify(logs));
-    };
+      const total = targetItems.reduce((sum, item) => {
+        sum.calories += Number(item.calories || 0);
+        sum.protein += Number(item.protein || 0);
+        sum.fat += Number(item.fat || 0);
+        sum.carbs += Number(item.carbs || 0);
+        return sum;
+      }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
 
-    const renderTotals = (logs = null) => {
-  const today = todayKey();
-  const targetLogs = logs || getLogs().filter(log => log.date === today);
-
-  const total = targetLogs.reduce((sum, log) => {
-    sum.calories += Number(log.calories || 0);
-    sum.protein += Number(log.protein || 0);
-    sum.fat += Number(log.fat || 0);
-    sum.carbs += Number(log.carbs || 0);
-    return sum;
-  }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
-
-  document.getElementById('totalCalories').textContent = Math.round(total.calories);
-  document.getElementById('totalProtein').textContent = total.protein.toFixed(1).replace('.0', '');
-  document.getElementById('totalFat').textContent = total.fat.toFixed(1).replace('.0', '');
-  document.getElementById('totalCarbs').textContent = total.carbs.toFixed(1).replace('.0', '');
-
-  const history = document.getElementById('history');
-
-  history.innerHTML = targetLogs.slice().reverse().map(log => `
-    <div class="history-item">
-      <strong>${escapeHtml(log.mealType || '')}</strong>：${escapeHtml(log.food || log.name || '')}<br>
-      ${log.calories} kcal / P ${log.protein}g / F ${log.fat}g / C ${log.carbs}g
-    </div>
-  `).join('');
-};
       document.getElementById('totalCalories').textContent = Math.round(total.calories);
       document.getElementById('totalProtein').textContent = total.protein.toFixed(1).replace('.0', '');
       document.getElementById('totalFat').textContent = total.fat.toFixed(1).replace('.0', '');
@@ -543,16 +542,23 @@
 
       const history = document.getElementById('history');
 
-      history.innerHTML = logs.slice().reverse().map(log => `
+      if (!targetItems.length) {
+        history.innerHTML = '<div class="sub">今日の記録はまだありません。</div>';
+        return;
+      }
+
+      history.innerHTML = targetItems.slice().reverse().map(item => `
         <div class="history-item">
-          <strong>${log.mealType}</strong>：${escapeHtml(log.food || '')}<br>
-          ${log.calories} kcal / P ${log.protein}g / F ${log.fat}g / C ${log.carbs}g
+          <strong>${escapeHtml(item.mealType || '')}</strong>：${escapeHtml(item.food || item.name || '')}<br>
+          ${item.calories || 0} kcal / P ${item.protein || 0}g / F ${item.fat || 0}g / C ${item.carbs || 0}g
         </div>
       `).join('');
     };
 
     const renderFavorites = () => {
       const box = document.getElementById('favorites');
+      if (!box) return;
+
       const keyword = favoriteSearchText.trim().toLowerCase();
 
       const filtered = favoritesCache.filter(item => {
@@ -594,82 +600,64 @@
       const panel = document.getElementById('favoritesPanel');
       const arrow = document.getElementById('favoritesArrow');
 
-      panel.hidden = !favoritesOpen;
-      arrow.textContent = favoritesOpen ? '▼' : '▶';
-    };
-
-    const escapeHtml = (str) => {
-      return String(str)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
-    };
-
-    const postToGas = async (payload) => {
-      const res = await fetch(GAS_URL, {
-        method: 'POST',
-        body: JSON.stringify(payload)
-      });
-
-      return await res.json();
+      if (panel) panel.hidden = !favoritesOpen;
+      if (arrow) arrow.textContent = favoritesOpen ? '▼' : '▶';
     };
 
     const loadFavorites = async (showMessage = false) => {
-  try {
-    if (showMessage) {
-      setStatus('お気に入りを読み込み中...');
-    }
+      try {
+        if (showMessage) {
+          setStatus('お気に入りを読み込み中...');
+        }
 
-    const loadTodayTotals = async (showMessage = true) => {
-  try {
-    if (showMessage) {
-      setStatus('Notionから今日の合計を読み込み中...');
-    }
+        const result = await postToGas({
+          action: 'getFavorites'
+        });
 
-    const result = await postToGas({
-      action: 'getTodayTotals',
-      date: todayKey()
-    });
+        if (!result.ok) {
+          throw new Error(JSON.stringify(result));
+        }
 
-    if (!result.ok) {
-      throw new Error(JSON.stringify(result));
-    }
+        favoritesCache = result.favorites || [];
+        renderFavorites();
 
-    const items = result.totals.items || [];
-    renderTotals(items);
+        if (showMessage) {
+          setStatus('お気に入りを更新しました。', 'ok');
+        }
 
-    if (showMessage) {
-      setStatus('今日の合計をNotionから更新しました。', 'ok');
-    }
+      } catch (error) {
+        console.error(error);
+        setStatus('お気に入りの読み込みに失敗しました。', 'ng');
+      }
+    };
 
-  } catch (error) {
-    console.error(error);
-    setStatus('今日の合計の読み込みに失敗しました。', 'ng');
-  }
-};
+    const loadTodayTotals = async (showMessage = false) => {
+      try {
+        if (showMessage) {
+          setStatus('Notionから今日の合計を読み込み中...');
+        }
 
-    const result = await postToGas({
-      action: 'getFavorites'
-    });
+        const result = await postToGas({
+          action: 'getTodayTotals',
+          date: todayKey()
+        });
 
-    if (!result.ok) {
-      throw new Error(JSON.stringify(result));
-    }
+        if (!result.ok) {
+          throw new Error(JSON.stringify(result));
+        }
 
-    favoritesCache = result.favorites || [];
-    renderFavorites();
+        const items = result.totals && result.totals.items ? result.totals.items : [];
+        renderTotals(items);
 
-    if (showMessage) {
-      setStatus('お気に入りを更新しました。', 'ok');
-    }
+        if (showMessage) {
+          setStatus('今日の合計をNotionから更新しました。', 'ok');
+        }
 
-  } catch (error) {
-    console.error(error);
-    setStatus('お気に入りの読み込みに失敗しました。', 'ng');
-  }
-};
+      } catch (error) {
+        console.error(error);
+        setStatus('今日の合計の読み込みに失敗しました。', 'ng');
+      }
+    };
 
     document.querySelectorAll('.meal-btn').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -679,123 +667,130 @@
       });
     });
 
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-      const saveBtn = document.getElementById('saveBtn');
-      const data = getCurrentInput();
+    const saveBtn = document.getElementById('saveBtn');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', async () => {
+        const data = getCurrentInput();
 
-      if (!data.food) {
-        setStatus('食べたものを入力してください。', 'ng');
-        return;
-      }
-
-      document.getElementById('refreshTotalsBtn').addEventListener('click', async () => {
-  await loadTodayTotals(true);
-});
-
-      saveBtn.disabled = true;
-      setStatus('保存中...');
-
-      try {
-        const result = await postToGas({
-          action: 'saveMeal',
-          ...data
-        });
-
-        if (!result.ok) {
-          throw new Error(JSON.stringify(result));
+        if (!data.food) {
+          setStatus('食べたものを入力してください。', 'ng');
+          return;
         }
 
-        const logs = getLogs();
-        logs.push(data);
-        saveLogs(logs);
+        saveBtn.disabled = true;
+        setStatus('保存中...');
 
-        document.getElementById('food').value = '';
-        document.getElementById('calories').value = '';
-        document.getElementById('protein').value = '';
-        document.getElementById('fat').value = '';
-        document.getElementById('carbs').value = '';
+        try {
+          const result = await postToGas({
+            action: 'saveMeal',
+            ...data
+          });
 
-        await loadTodayTotals(false);
-setStatus('Notionに保存しました。', 'ok');
+          if (!result.ok) {
+            throw new Error(JSON.stringify(result));
+          }
 
-      } catch (error) {
-        console.error(error);
-        setStatus('保存に失敗しました。GAS URLやNotion設定を確認してください。', 'ng');
+          clearInput();
+          await loadTodayTotals(false);
+          setStatus('Notionに保存しました。', 'ok');
 
-      } finally {
-        saveBtn.disabled = false;
-      }
-    });
+        } catch (error) {
+          console.error(error);
+          setStatus('保存に失敗しました。GAS URLやNotion設定を確認してください。', 'ng');
 
-    document.getElementById('saveFavoriteBtn').addEventListener('click', async () => {
-      const btn = document.getElementById('saveFavoriteBtn');
-      const data = getCurrentInput();
+        } finally {
+          saveBtn.disabled = false;
+        }
+      });
+    }
 
-      if (!data.food) {
-        setStatus('お気に入り名として、食べたものを入力してください。', 'ng');
-        return;
-      }
+    const saveFavoriteBtn = document.getElementById('saveFavoriteBtn');
+    if (saveFavoriteBtn) {
+      saveFavoriteBtn.addEventListener('click', async () => {
+        const data = getCurrentInput();
 
-      btn.disabled = true;
-      setStatus('お気に入り登録中...');
-
-      try {
-        const result = await postToGas({
-          action: 'saveFavorite',
-          name: data.food,
-          calories: data.calories,
-          protein: data.protein,
-          fat: data.fat,
-          carbs: data.carbs,
-          memo: ''
-        });
-
-        if (!result.ok) {
-          throw new Error(JSON.stringify(result));
+        if (!data.food) {
+          setStatus('お気に入り名として、食べたものを入力してください。', 'ng');
+          return;
         }
 
-        setStatus('お気に入りに登録しました。', 'ok');
+        saveFavoriteBtn.disabled = true;
+        setStatus('お気に入り登録中...');
 
-        await loadFavorites();
+        try {
+          const result = await postToGas({
+            action: 'saveFavorite',
+            name: data.food,
+            calories: data.calories,
+            protein: data.protein,
+            fat: data.fat,
+            carbs: data.carbs,
+            memo: ''
+          });
+
+          if (!result.ok) {
+            throw new Error(JSON.stringify(result));
+          }
+
+          setStatus('お気に入りに登録しました。', 'ok');
+          await loadFavorites(false);
+          setFavoritesOpen(true);
+
+        } catch (error) {
+          console.error(error);
+          setStatus('お気に入り登録に失敗しました。', 'ng');
+
+        } finally {
+          saveFavoriteBtn.disabled = false;
+        }
+      });
+    }
+
+    const refreshFavoritesBtn = document.getElementById('refreshFavoritesBtn');
+    if (refreshFavoritesBtn) {
+      refreshFavoritesBtn.addEventListener('click', async () => {
         setFavoritesOpen(true);
+        await loadFavorites(true);
+      });
+    }
 
-      } catch (error) {
-        console.error(error);
-        setStatus('お気に入り登録に失敗しました。', 'ng');
+    const favoritesToggle = document.getElementById('favoritesToggle');
+    if (favoritesToggle) {
+      favoritesToggle.addEventListener('click', async () => {
+        setFavoritesOpen(!favoritesOpen);
 
-      } finally {
-        btn.disabled = false;
-      }
-    });
+        if (favoritesOpen && favoritesCache.length === 0) {
+          await loadFavorites(false);
+        }
+      });
+    }
 
-    document.getElementById('refreshFavoritesBtn').addEventListener('click', async () => {
-      setFavoritesOpen(true);
-      await loadFavorites();
-    });
+    const favoriteSearch = document.getElementById('favoriteSearch');
+    if (favoriteSearch) {
+      favoriteSearch.addEventListener('input', (e) => {
+        favoriteSearchText = e.target.value;
+        renderFavorites();
+      });
+    }
 
-    document.getElementById('favoritesToggle').addEventListener('click', async () => {
-      setFavoritesOpen(!favoritesOpen);
+    const refreshTotalsBtn = document.getElementById('refreshTotalsBtn');
+    if (refreshTotalsBtn) {
+      refreshTotalsBtn.addEventListener('click', async () => {
+        await loadTodayTotals(true);
+      });
+    }
 
-      if (favoritesOpen && favoritesCache.length === 0) {
-        await loadFavorites();
-      }
-    });
+    const clearLocalBtn = document.getElementById('clearLocalBtn');
+    if (clearLocalBtn) {
+      clearLocalBtn.addEventListener('click', () => {
+        renderTotals([]);
+        setStatus('表示をリセットしました。Notionの記録は消していません。', 'ok');
+      });
+    }
 
-    document.getElementById('favoriteSearch').addEventListener('input', (e) => {
-      favoriteSearchText = e.target.value;
-      renderFavorites();
-    });
-
-    document.getElementById('clearLocalBtn').addEventListener('click', () => {
-      const today = todayKey();
-      const logs = getLogs().filter(log => log.date !== today);
-      saveLogs(logs);
-      renderTotals();
-    });
-
-    renderTotals();
-setFavoritesOpen(false);
-loadTodayTotals(false);
+    renderTotals([]);
+    setFavoritesOpen(false);
+    loadTodayTotals(false);
   </script>
 </body>
 </html>
