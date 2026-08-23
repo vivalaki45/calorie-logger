@@ -436,8 +436,9 @@
       </div>
 
       <div class="actions">
-        <button id="clearLocalBtn" class="secondary" type="button">今日の表示をリセット</button>
-      </div>
+  <button id="refreshTotalsBtn" class="secondary cyan" type="button">Notionから合計更新</button>
+  <button id="clearLocalBtn" class="secondary" type="button">今日の表示をリセット</button>
+</div>
 
       <div id="history" class="history"></div>
     </section>
@@ -509,18 +510,32 @@
       localStorage.setItem('calorieLogs', JSON.stringify(logs));
     };
 
-    const renderTotals = () => {
-      const today = todayKey();
-      const logs = getLogs().filter(log => log.date === today);
+    const renderTotals = (logs = null) => {
+  const today = todayKey();
+  const targetLogs = logs || getLogs().filter(log => log.date === today);
 
-      const total = logs.reduce((sum, log) => {
-        sum.calories += Number(log.calories || 0);
-        sum.protein += Number(log.protein || 0);
-        sum.fat += Number(log.fat || 0);
-        sum.carbs += Number(log.carbs || 0);
-        return sum;
-      }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
+  const total = targetLogs.reduce((sum, log) => {
+    sum.calories += Number(log.calories || 0);
+    sum.protein += Number(log.protein || 0);
+    sum.fat += Number(log.fat || 0);
+    sum.carbs += Number(log.carbs || 0);
+    return sum;
+  }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
 
+  document.getElementById('totalCalories').textContent = Math.round(total.calories);
+  document.getElementById('totalProtein').textContent = total.protein.toFixed(1).replace('.0', '');
+  document.getElementById('totalFat').textContent = total.fat.toFixed(1).replace('.0', '');
+  document.getElementById('totalCarbs').textContent = total.carbs.toFixed(1).replace('.0', '');
+
+  const history = document.getElementById('history');
+
+  history.innerHTML = targetLogs.slice().reverse().map(log => `
+    <div class="history-item">
+      <strong>${escapeHtml(log.mealType || '')}</strong>：${escapeHtml(log.food || log.name || '')}<br>
+      ${log.calories} kcal / P ${log.protein}g / F ${log.fat}g / C ${log.carbs}g
+    </div>
+  `).join('');
+};
       document.getElementById('totalCalories').textContent = Math.round(total.calories);
       document.getElementById('totalProtein').textContent = total.protein.toFixed(1).replace('.0', '');
       document.getElementById('totalFat').textContent = total.fat.toFixed(1).replace('.0', '');
@@ -607,6 +622,34 @@
       setStatus('お気に入りを読み込み中...');
     }
 
+    const loadTodayTotals = async (showMessage = true) => {
+  try {
+    if (showMessage) {
+      setStatus('Notionから今日の合計を読み込み中...');
+    }
+
+    const result = await postToGas({
+      action: 'getTodayTotals',
+      date: todayKey()
+    });
+
+    if (!result.ok) {
+      throw new Error(JSON.stringify(result));
+    }
+
+    const items = result.totals.items || [];
+    renderTotals(items);
+
+    if (showMessage) {
+      setStatus('今日の合計をNotionから更新しました。', 'ok');
+    }
+
+  } catch (error) {
+    console.error(error);
+    setStatus('今日の合計の読み込みに失敗しました。', 'ng');
+  }
+};
+
     const result = await postToGas({
       action: 'getFavorites'
     });
@@ -645,6 +688,10 @@
         return;
       }
 
+      document.getElementById('refreshTotalsBtn').addEventListener('click', async () => {
+  await loadTodayTotals(true);
+});
+
       saveBtn.disabled = true;
       setStatus('保存中...');
 
@@ -668,8 +715,8 @@
         document.getElementById('fat').value = '';
         document.getElementById('carbs').value = '';
 
-        renderTotals();
-        setStatus('Notionに保存しました。', 'ok');
+        await loadTodayTotals(false);
+setStatus('Notionに保存しました。', 'ok');
 
       } catch (error) {
         console.error(error);
@@ -747,7 +794,8 @@
     });
 
     renderTotals();
-    setFavoritesOpen(false);
+setFavoritesOpen(false);
+loadTodayTotals(false);
   </script>
 </body>
 </html>
