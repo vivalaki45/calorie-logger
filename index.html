@@ -1,11 +1,12 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f1420" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+  <meta name="theme-color" content="#0f1420">
   <title>カロリー記録</title>
 
   <style>
@@ -20,7 +21,7 @@
       --line: #384258;
       --green: #48d17a;
       --green2: #243d33;
-      --yellow: #d7a900;
+      --yellow: #e9c318;
       --danger: #ff6b6b;
       --cyan: #20c7c9;
       --orange: #f5a65b;
@@ -32,7 +33,6 @@
     }
 
     html {
-      margin: 0;
       min-height: 100%;
       background: var(--bg);
     }
@@ -40,14 +40,21 @@
     body {
       margin: 0;
       min-height: 100%;
-      background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+      background: linear-gradient(
+        180deg,
+        var(--bg),
+        var(--bg2)
+      );
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
       padding:
         max(20px, env(safe-area-inset-top))
         14px
-        max(40px, env(safe-area-inset-bottom))
-        14px;
+        max(40px, env(safe-area-inset-bottom));
       overflow-x: hidden;
     }
 
@@ -61,14 +68,8 @@
       cursor: pointer;
     }
 
-    button:focus-visible,
-    input:focus-visible,
-    textarea:focus-visible {
-      outline: 3px solid rgba(32, 199, 201, 0.55);
-      outline-offset: 2px;
-    }
-
     .app {
+      width: 100%;
       max-width: 560px;
       margin: 0 auto;
     }
@@ -79,9 +80,9 @@
 
     .eyebrow {
       color: var(--green);
+      font-size: 13px;
       font-weight: 800;
       letter-spacing: 0.12em;
-      font-size: 13px;
     }
 
     h1 {
@@ -94,24 +95,29 @@
       font-size: 24px;
     }
 
-    .sub {
+    .sub,
+    .range {
       color: var(--muted);
       font-size: 14px;
       line-height: 1.5;
     }
 
+    .range {
+      font-weight: 800;
+    }
+
     .tabs {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin: 0 0 14px;
-      padding: 6px;
-      background: rgba(28, 35, 51, 0.92);
-      border: 1px solid var(--line);
-      border-radius: 999px;
       position: sticky;
       top: max(8px, env(safe-area-inset-top));
       z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 6px;
+      background: rgba(28, 35, 51, 0.96);
+      border: 1px solid var(--line);
+      border-radius: 999px;
       backdrop-filter: blur(10px);
     }
 
@@ -119,104 +125,64 @@
       min-height: 44px;
       border: 0;
       border-radius: 999px;
-      padding: 10px 6px;
-      color: var(--muted);
       background: transparent;
+      color: var(--muted);
       font-size: 14px;
       font-weight: 900;
     }
 
     .tab-btn.active {
-      color: #08120d;
       background: var(--green);
-    }
-
-    .slider {
-      width: 100%;
-      overflow: hidden;
-    }
-
-    .slides {
-      display: flex;
-      width: 300%;
-      transform: translateX(-33.333333%);
-      transition: transform 0.28s ease;
-      align-items: flex-start;
-    }
-
-    .slides.show-log {
-      transform: translateX(0);
-    }
-
-    .slides.show-summary {
-      transform: translateX(-33.333333%);
-    }
-
-    .slides.show-body {
-      transform: translateX(-66.666666%);
+      color: #08120d;
     }
 
     .screen {
-      width: 33.333333%;
-      padding: 0 1px;
+      display: none;
+      width: 100%;
+    }
+
+    .screen.active {
+      display: block;
     }
 
     .card {
+      width: 100%;
+      margin-bottom: 16px;
+      padding: 18px;
       background: rgba(28, 35, 51, 0.96);
       border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 18px;
-      margin-bottom: 18px;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+      border-radius: 24px;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.22);
     }
 
     label {
       display: block;
-      color: var(--muted);
-      font-weight: 700;
       margin: 14px 0 8px;
+      color: var(--muted);
       font-size: 14px;
+      font-weight: 700;
     }
 
     input,
     textarea {
       width: 100%;
-      border: 1px solid var(--line);
+      padding: 14px 15px;
       background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
       color: var(--text);
-      border-radius: 18px;
-      padding: 15px 16px;
       font-size: 18px;
       outline: none;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--cyan);
     }
 
     textarea {
       min-height: 82px;
       resize: vertical;
-    }
-
-    .meal-buttons {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 8px;
-    }
-
-    .meal-btn {
-      min-height: 44px;
-      border: 1px solid var(--line);
-      background: var(--card2);
-      color: var(--text);
-      border-radius: 999px;
-      padding: 10px 4px;
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .meal-btn.active {
-      background: var(--green2);
-      border-color: var(--green);
-      color: var(--green);
     }
 
     .grid {
@@ -229,52 +195,100 @@
       position: relative;
     }
 
-    .unit {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted);
-      font-weight: 800;
-      font-size: 16px;
-      pointer-events: none;
-    }
-
     .unit-wrap input {
       padding-right: 58px;
       font-weight: 800;
     }
 
-    .save {
+    .unit {
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-weight: 800;
+      pointer-events: none;
+    }
+
+    .meal-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 7px;
+    }
+
+    .meal-btn {
+      min-height: 44px;
+      padding: 8px 3px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .meal-btn.active {
+      background: var(--green2);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .primary {
       width: 100%;
       min-height: 56px;
-      border: 0;
-      background: var(--green);
-      color: #08120d;
-      border-radius: 22px;
-      padding: 16px;
       margin-top: 18px;
-      font-size: 20px;
+      background: var(--green);
+      border: 0;
+      border-radius: 20px;
+      color: #08120d;
+      font-size: 19px;
       font-weight: 900;
     }
 
-    .save.orange {
+    .primary.orange {
       background: var(--orange);
     }
 
-    .save:disabled,
+    .primary:disabled,
     .secondary:disabled {
-      opacity: 0.6;
+      opacity: 0.55;
       cursor: wait;
     }
 
-    .status {
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
       margin-top: 12px;
+    }
+
+    .actions.single {
+      grid-template-columns: 1fr;
+    }
+
+    .secondary {
+      min-height: 44px;
+      padding: 10px;
+      background: transparent;
+      border: 1px solid var(--green);
+      border-radius: 999px;
+      color: var(--green);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .secondary.cyan {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .status {
+      min-height: 22px;
+      margin-top: 10px;
       color: var(--muted);
       font-weight: 700;
-      min-height: 24px;
       line-height: 1.5;
-      word-break: break-word;
+      overflow-wrap: anywhere;
     }
 
     .status.ok {
@@ -285,57 +299,28 @@
       color: var(--danger);
     }
 
-    .actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 14px;
-    }
-
-    .actions.single {
-      grid-template-columns: 1fr;
-    }
-
-    .secondary {
-      min-height: 44px;
-      border: 1px solid var(--green);
-      color: var(--green);
-      background: transparent;
-      border-radius: 999px;
-      padding: 11px;
-      font-weight: 800;
-      font-size: 15px;
-    }
-
-    .secondary.cyan {
-      border-color: var(--cyan);
-      color: var(--cyan);
-    }
-
     .toggle-title {
-      width: 100%;
-      min-height: 44px;
-      border: 0;
-      background: transparent;
-      color: var(--text);
-      padding: 0;
       display: flex;
       align-items: center;
       gap: 10px;
-      font-size: 24px;
+      width: 100%;
+      min-height: 44px;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      color: var(--text);
+      font-size: 23px;
       font-weight: 900;
       text-align: left;
     }
 
     #favoritesArrow {
+      width: 22px;
       color: var(--green);
-      font-size: 20px;
-      width: 24px;
-      flex: 0 0 24px;
     }
 
     .favorites-panel {
-      margin-top: 14px;
+      margin-top: 12px;
     }
 
     .favorite-search {
@@ -344,43 +329,42 @@
 
     .favorites {
       display: grid;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 9px;
+      margin-top: 10px;
     }
 
     .favorite-btn {
       width: 100%;
       min-height: 56px;
-      text-align: left;
-      border: 1px solid var(--line);
+      padding: 13px;
       background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 16px;
       color: var(--text);
-      border-radius: 18px;
-      padding: 14px;
-      font-size: 15px;
-      line-height: 1.5;
+      text-align: left;
     }
 
     .favorite-name {
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 900;
-      margin-bottom: 4px;
     }
 
     .favorite-macro {
+      margin-top: 4px;
       color: var(--muted);
+      font-size: 13px;
       font-weight: 700;
     }
 
     .pill {
       display: inline-block;
-      color: var(--green);
-      background: var(--green2);
-      border: 1px solid rgba(72, 209, 122, 0.55);
-      border-radius: 999px;
-      padding: 4px 8px;
-      font-size: 12px;
       margin-left: 6px;
+      padding: 3px 7px;
+      background: var(--green2);
+      border: 1px solid var(--green);
+      border-radius: 999px;
+      color: var(--green);
+      font-size: 12px;
     }
 
     .totals {
@@ -391,22 +375,23 @@
     }
 
     .total-box {
-      border: 1px solid var(--line);
-      background: var(--card2);
-      border-radius: 22px;
-      padding: 14px;
+      min-width: 0;
       min-height: 108px;
+      padding: 14px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 20px;
     }
 
     .total-label {
+      margin-bottom: 8px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 800;
-      margin-bottom: 8px;
     }
 
     .total-value {
-      font-size: 28px;
+      font-size: 27px;
       font-weight: 900;
       overflow-wrap: anywhere;
     }
@@ -421,24 +406,76 @@
     .pfc-balance {
       margin-top: 16px;
       padding: 16px;
-      border: 1px solid var(--line);
       background: var(--card2);
-      border-radius: 22px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
     }
 
     .pfc-title-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px 12px;
       margin-bottom: 12px;
+    }
+
+    .pfc-title {
+      font-size: 17px;
       font-weight: 900;
     }
 
-    .pfc-caption {
-      color: var(--muted);
-      font-size: 12px;
-      font-weight: 800;
+    .ideal-pfc {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-left: auto;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .ideal-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .ideal-dot,
+    .actual-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      flex: 0 0 9px;
+    }
+
+    .ideal-protein {
+      color: var(--green);
+    }
+
+    .ideal-fat {
+      color: var(--orange);
+    }
+
+    .ideal-carbs {
+      color: var(--cyan);
+    }
+
+    .ideal-protein .ideal-dot,
+    .actual-dot.protein {
+      background: var(--green);
+    }
+
+    .ideal-fat .ideal-dot,
+    .actual-dot.fat {
+      background: var(--orange);
+    }
+
+    .ideal-carbs .ideal-dot,
+    .actual-dot.carbs {
+      background: var(--cyan);
     }
 
     .pfc-bar {
@@ -446,8 +483,8 @@
       width: 100%;
       height: 20px;
       overflow: hidden;
-      border-radius: 999px;
       background: var(--line);
+      border-radius: 999px;
     }
 
     .pfc-segment {
@@ -471,30 +508,24 @@
     .pfc-legend {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      gap: 6px;
       margin-top: 12px;
     }
 
     .pfc-legend-item {
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 4px;
       color: var(--muted);
       font-size: 14px;
       font-weight: 800;
+      white-space: nowrap;
     }
 
     .pfc-legend-item strong {
       color: var(--text);
       font-size: 17px;
-    }
-
-    .pfc-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      flex: 0 0 9px;
     }
 
     .history,
@@ -507,14 +538,14 @@
 
     .history-item,
     .day-item {
-      border-top: 1px solid var(--line);
       padding: 10px 0;
+      border-top: 1px solid var(--line);
     }
 
     .day-head {
       display: flex;
-      justify-content: space-between;
       align-items: baseline;
+      justify-content: space-between;
       gap: 8px;
       color: var(--text);
       font-weight: 900;
@@ -526,12 +557,6 @@
       font-weight: 700;
     }
 
-    .range {
-      color: var(--muted);
-      font-weight: 800;
-      margin-top: 4px;
-    }
-
     .metric-row {
       display: grid;
       gap: 10px;
@@ -539,22 +564,23 @@
     }
 
     .metric-card {
-      border: 1px solid var(--line);
-      background: var(--card2);
-      border-radius: 22px;
       padding: 14px;
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 20px;
     }
 
     .metric-main {
-      font-size: 30px;
+      font-size: 29px;
       font-weight: 900;
     }
 
     .metric-sub {
+      margin-top: 4px;
       color: var(--muted);
       font-size: 13px;
       font-weight: 800;
-      margin-top: 4px;
+      line-height: 1.5;
     }
 
     .diff-plus {
@@ -572,15 +598,6 @@
       font-weight: 900;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        transition: none !important;
-      }
-    }
-
     @media (max-width: 370px) {
       body {
         padding-left: 10px;
@@ -589,11 +606,14 @@
 
       .card {
         padding: 15px;
-        border-radius: 22px;
       }
 
       .total-value {
-        font-size: 24px;
+        font-size: 23px;
+      }
+
+      .ideal-pfc {
+        font-size: 12px;
       }
 
       .pfc-legend-item {
@@ -612,493 +632,547 @@
     <header class="header">
       <div class="eyebrow">HEALTH LOG</div>
       <h1>カロリー・体組成</h1>
-      <div class="sub">食事・PFC・体重・体脂肪率をNotionに記録</div>
+      <div class="sub">
+        食事・PFC・体重・体脂肪率をNotionに記録
+      </div>
     </header>
 
-    <nav class="tabs" aria-label="画面切り替え">
-      <button id="tabLog" class="tab-btn" type="button">記録</button>
-      <button id="tabSummary" class="tab-btn active" type="button">サマリー</button>
-      <button id="tabBody" class="tab-btn" type="button">体組成</button>
+    <nav class="tabs">
+      <button
+        id="tabLog"
+        class="tab-btn"
+        type="button"
+      >
+        記録
+      </button>
+
+      <button
+        id="tabSummary"
+        class="tab-btn active"
+        type="button"
+      >
+        サマリー
+      </button>
+
+      <button
+        id="tabBody"
+        class="tab-btn"
+        type="button"
+      >
+        体組成
+      </button>
     </nav>
 
-    <div class="slider">
-      <div id="slides" class="slides show-summary">
+    <!-- 記録画面 -->
+    <main id="screenLog" class="screen">
+      <section class="card">
+        <button
+          id="favoritesToggle"
+          class="toggle-title"
+          type="button"
+          aria-expanded="false"
+        >
+          <span id="favoritesArrow">▶</span>
+          <span>お気に入り食材</span>
+        </button>
 
-        <!-- 記録画面 -->
-        <main class="screen" aria-label="食事記録">
-          <section class="card">
-            <button
-              id="favoritesToggle"
-              class="toggle-title"
-              type="button"
-              aria-expanded="false"
-            >
-              <span id="favoritesArrow">▶</span>
-              <span>お気に入り食材</span>
-            </button>
+        <div
+          id="favoritesPanel"
+          class="favorites-panel"
+          hidden
+        >
+          <div class="sub">
+            タップすると入力欄に反映します。
+          </div>
 
-            <div id="favoritesPanel" class="favorites-panel" hidden>
-              <div class="sub">
-                タップすると入力欄に反映します。選択後は自動で閉じます。
-              </div>
+          <input
+            id="favoriteSearch"
+            class="favorite-search"
+            type="search"
+            placeholder="お気に入りを検索"
+          >
 
+          <div id="favorites" class="favorites"></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">MEAL INPUT</div>
+        <h2>食事記録</h2>
+
+        <label>食事区分</label>
+
+        <div class="meal-buttons">
+          <button
+            class="meal-btn active"
+            type="button"
+            data-meal="朝食"
+          >
+            朝食
+          </button>
+
+          <button
+            class="meal-btn"
+            type="button"
+            data-meal="昼食"
+          >
+            昼食
+          </button>
+
+          <button
+            class="meal-btn"
+            type="button"
+            data-meal="夕食"
+          >
+            夕食
+          </button>
+
+          <button
+            class="meal-btn"
+            type="button"
+            data-meal="間食"
+          >
+            間食
+          </button>
+        </div>
+
+        <label for="food">食べたもの</label>
+
+        <textarea
+          id="food"
+          placeholder="例：ご飯250g、卵2個、納豆"
+        ></textarea>
+
+        <div class="grid">
+          <div>
+            <label for="calories">カロリー</label>
+
+            <div class="unit-wrap">
               <input
-                id="favoriteSearch"
-                class="favorite-search"
-                type="search"
-                placeholder="お気に入りを検索"
-                aria-label="お気に入りを検索"
-              />
-
-              <div id="favorites" class="favorites"></div>
-            </div>
-          </section>
-
-          <section class="card">
-            <div class="eyebrow">MEAL INPUT</div>
-            <h2>食事記録</h2>
-
-            <label>食事区分</label>
-
-            <div class="meal-buttons">
-              <button class="meal-btn active" type="button" data-meal="朝食">
-                朝食
-              </button>
-
-              <button class="meal-btn" type="button" data-meal="昼食">
-                昼食
-              </button>
-
-              <button class="meal-btn" type="button" data-meal="夕食">
-                夕食
-              </button>
-
-              <button class="meal-btn" type="button" data-meal="間食">
-                間食
-              </button>
-            </div>
-
-            <label for="food">食べたもの</label>
-
-            <textarea
-              id="food"
-              placeholder="例：ご飯250g、卵2個、納豆、プロテイン"
-            ></textarea>
-
-            <div class="grid">
-              <div>
-                <label for="calories">カロリー</label>
-
-                <div class="unit-wrap">
-                  <input
-                    id="calories"
-                    type="number"
-                    inputmode="decimal"
-                    placeholder="0"
-                  />
-
-                  <span class="unit">kcal</span>
-                </div>
-              </div>
-
-              <div>
-                <label for="protein">タンパク質</label>
-
-                <div class="unit-wrap">
-                  <input
-                    id="protein"
-                    type="number"
-                    inputmode="decimal"
-                    step="0.1"
-                    placeholder="0"
-                  />
-
-                  <span class="unit">g</span>
-                </div>
-              </div>
-
-              <div>
-                <label for="fat">脂質</label>
-
-                <div class="unit-wrap">
-                  <input
-                    id="fat"
-                    type="number"
-                    inputmode="decimal"
-                    step="0.1"
-                    placeholder="0"
-                  />
-
-                  <span class="unit">g</span>
-                </div>
-              </div>
-
-              <div>
-                <label for="carbs">炭水化物</label>
-
-                <div class="unit-wrap">
-                  <input
-                    id="carbs"
-                    type="number"
-                    inputmode="decimal"
-                    step="0.1"
-                    placeholder="0"
-                  />
-
-                  <span class="unit">g</span>
-                </div>
-              </div>
-            </div>
-
-            <button id="saveBtn" class="save" type="button">
-              食事を保存
-            </button>
-
-            <div class="actions">
-              <button
-                id="saveFavoriteBtn"
-                class="secondary"
-                type="button"
+                id="calories"
+                type="number"
+                inputmode="decimal"
+                placeholder="0"
               >
-                お気に入り登録
-              </button>
+              <span class="unit">kcal</span>
+            </div>
+          </div>
 
-              <button
-                id="refreshFavoritesBtn"
-                class="secondary cyan"
-                type="button"
+          <div>
+            <label for="protein">タンパク質</label>
+
+            <div class="unit-wrap">
+              <input
+                id="protein"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                placeholder="0"
               >
-                お気に入り更新
-              </button>
+              <span class="unit">g</span>
             </div>
+          </div>
 
-            <div id="status" class="status" role="status"></div>
-          </section>
-        </main>
+          <div>
+            <label for="fat">脂質</label>
 
-        <!-- サマリー画面 -->
-        <main class="screen" aria-label="サマリー">
-          <section class="card">
-            <div class="eyebrow">SUMMARY</div>
-            <h1>サマリー</h1>
-
-            <div id="summaryDate" class="range">
-              読み込み中...
-            </div>
-
-            <div class="actions single">
-              <button
-                id="refreshSummaryBtn"
-                class="secondary cyan"
-                type="button"
+            <div class="unit-wrap">
+              <input
+                id="fat"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                placeholder="0"
               >
-                サマリー更新
-              </button>
+              <span class="unit">g</span>
             </div>
+          </div>
 
-            <div id="summaryStatus" class="status" role="status"></div>
-          </section>
+          <div>
+            <label for="carbs">炭水化物</label>
 
-          <section class="card">
-            <div class="eyebrow">TODAY</div>
-            <h2>今日の合計</h2>
-
-            <div class="totals">
-              <div class="total-box">
-                <div class="total-label">カロリー</div>
-
-                <div class="total-value">
-                  <span id="totalCalories">0</span> kcal
-                </div>
-
-                <div class="target">2547 kcal</div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">タンパク質</div>
-
-                <div class="total-value">
-                  <span id="totalProtein">0</span> g
-                </div>
-
-                <div class="target">180 g</div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">脂質</div>
-
-                <div class="total-value">
-                  <span id="totalFat">0</span> g
-                </div>
-
-                <div class="target">70 g</div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">炭水化物</div>
-
-                <div class="total-value">
-                  <span id="totalCarbs">0</span> g
-                </div>
-
-                <div class="target">300 g</div>
-              </div>
-            </div>
-
-            <div class="pfc-balance">
-              <div class="pfc-title-row">
-                <span>PFCバランス</span>
-                <span class="pfc-caption">カロリー比</span>
-              </div>
-
-              <div class="pfc-bar" aria-label="今日のPFCバランス">
-                <div
-                  id="todayPfcPBar"
-                  class="pfc-segment pfc-protein"
-                ></div>
-
-                <div
-                  id="todayPfcFBar"
-                  class="pfc-segment pfc-fat"
-                ></div>
-
-                <div
-                  id="todayPfcCBar"
-                  class="pfc-segment pfc-carbs"
-                ></div>
-              </div>
-
-              <div class="pfc-legend">
-                <div class="pfc-legend-item">
-                  <span class="pfc-dot pfc-protein"></span>
-                  P <strong id="todayPfcP">0</strong>%
-                </div>
-
-                <div class="pfc-legend-item">
-                  <span class="pfc-dot pfc-fat"></span>
-                  F <strong id="todayPfcF">0</strong>%
-                </div>
-
-                <div class="pfc-legend-item">
-                  <span class="pfc-dot pfc-carbs"></span>
-                  C <strong id="todayPfcC">0</strong>%
-                </div>
-              </div>
-            </div>
-
-            <div id="history" class="history"></div>
-          </section>
-
-          <section class="card">
-            <div class="eyebrow">WEEK</div>
-            <h2>直近7日間</h2>
-
-            <div id="weekRange" class="range"></div>
-
-            <div class="totals">
-              <div class="total-box">
-                <div class="total-label">7日合計 kcal</div>
-
-                <div class="total-value">
-                  <span id="weekCalories">0</span>
-                </div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">7日平均 kcal</div>
-
-                <div class="total-value">
-                  <span id="avgCalories">0</span>
-                </div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">平均 P</div>
-
-                <div class="total-value">
-                  <span id="avgProtein">0</span> g
-                </div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">平均 F / C</div>
-
-                <div class="total-value">
-                  <span id="avgFat">0</span>/<span id="avgCarbs">0</span> g
-                </div>
-              </div>
-            </div>
-
-            <div class="pfc-balance">
-              <div class="pfc-title-row">
-                <span>7日間のPFCバランス</span>
-                <span class="pfc-caption">カロリー比</span>
-              </div>
-
-              <div class="pfc-bar" aria-label="7日間のPFCバランス">
-                <div
-                  id="weekPfcPBar"
-                  class="pfc-segment pfc-protein"
-                ></div>
-
-                <div
-                  id="weekPfcFBar"
-                  class="pfc-segment pfc-fat"
-                ></div>
-
-                <div
-                  id="weekPfcCBar"
-                  class="pfc-segment pfc-carbs"
-                ></div>
-              </div>
-
-              <div class="pfc-legend">
-                <div class="pfc-legend-item">
-                  <span class="pfc-dot pfc-protein"></span>
-                  P <strong id="weekPfcP">0</strong>%
-                </div>
-
-                <div class="pfc-legend-item">
-                  <span class="pfc-dot pfc-fat"></span>
-                  F <strong id="weekPfcF">0</strong>%
-                </div>
-
-                <div class="pfc-legend-item">
-                  <span class="pfc-dot pfc-carbs"></span>
-                  C <strong id="weekPfcC">0</strong>%
-                </div>
-              </div>
-            </div>
-
-            <div id="dayList" class="day-list"></div>
-          </section>
-
-          <section class="card">
-            <div class="eyebrow">BODY</div>
-            <h2>最新体組成</h2>
-
-            <div class="totals">
-              <div class="total-box">
-                <div class="total-label">体重</div>
-
-                <div class="total-value">
-                  <span id="latestWeight">0</span> kg
-                </div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">体脂肪率</div>
-
-                <div class="total-value">
-                  <span id="latestBodyFat">0</span> %
-                </div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">体脂肪量</div>
-
-                <div class="total-value">
-                  <span id="latestFatMass">0</span> kg
-                </div>
-              </div>
-
-              <div class="total-box">
-                <div class="total-label">除脂肪体重</div>
-
-                <div class="total-value">
-                  <span id="latestLeanMass">0</span> kg
-                </div>
-              </div>
-            </div>
-
-            <div id="bodyDiff" class="history"></div>
-          </section>
-        </main>
-
-        <!-- 体組成画面 -->
-        <main class="screen" aria-label="体組成">
-          <section class="card">
-            <div class="eyebrow">BODY INPUT</div>
-            <h1>体組成</h1>
-
-            <div class="grid">
-              <div>
-                <label for="weight">体重</label>
-
-                <div class="unit-wrap">
-                  <input
-                    id="weight"
-                    type="number"
-                    inputmode="decimal"
-                    step="0.1"
-                    placeholder="0"
-                  />
-
-                  <span class="unit">kg</span>
-                </div>
-              </div>
-
-              <div>
-                <label for="bodyFat">体脂肪率</label>
-
-                <div class="unit-wrap">
-                  <input
-                    id="bodyFat"
-                    type="number"
-                    inputmode="decimal"
-                    step="0.1"
-                    placeholder="0"
-                  />
-
-                  <span class="unit">%</span>
-                </div>
-              </div>
-            </div>
-
-            <label for="bodyMemo">メモ</label>
-
-            <textarea
-              id="bodyMemo"
-              placeholder="例：朝、健康診断後、運動後など"
-            ></textarea>
-
-            <button id="saveBodyBtn" class="save orange" type="button">
-              体組成を保存
-            </button>
-
-            <div class="actions single">
-              <button
-                id="refreshBodyBtn"
-                class="secondary cyan"
-                type="button"
+            <div class="unit-wrap">
+              <input
+                id="carbs"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                placeholder="0"
               >
-                体組成を更新
-              </button>
+              <span class="unit">g</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          id="saveBtn"
+          class="primary"
+          type="button"
+        >
+          食事を保存
+        </button>
+
+        <div class="actions">
+          <button
+            id="saveFavoriteBtn"
+            class="secondary"
+            type="button"
+          >
+            お気に入り登録
+          </button>
+
+          <button
+            id="refreshFavoritesBtn"
+            class="secondary cyan"
+            type="button"
+          >
+            お気に入り更新
+          </button>
+        </div>
+
+        <div id="status" class="status"></div>
+      </section>
+    </main>
+
+    <!-- サマリー画面 -->
+    <main id="screenSummary" class="screen active">
+      <section class="card">
+        <div class="eyebrow">SUMMARY</div>
+        <h1>サマリー</h1>
+
+        <div id="summaryDate" class="range">
+          読み込み中...
+        </div>
+
+        <div class="actions single">
+          <button
+            id="refreshSummaryBtn"
+            class="secondary cyan"
+            type="button"
+          >
+            サマリー更新
+          </button>
+        </div>
+
+        <div id="summaryStatus" class="status"></div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">TODAY</div>
+        <h2>今日の合計</h2>
+
+        <div class="totals">
+          <div class="total-box">
+            <div class="total-label">カロリー</div>
+            <div class="total-value">
+              <span id="totalCalories">0</span> kcal
+            </div>
+            <div class="target">2547 kcal</div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">タンパク質</div>
+            <div class="total-value">
+              <span id="totalProtein">0</span> g
+            </div>
+            <div class="target">180 g</div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">脂質</div>
+            <div class="total-value">
+              <span id="totalFat">0</span> g
+            </div>
+            <div class="target">70 g</div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">炭水化物</div>
+            <div class="total-value">
+              <span id="totalCarbs">0</span> g
+            </div>
+            <div class="target">300 g</div>
+          </div>
+        </div>
+
+        <div class="pfc-balance">
+          <div class="pfc-title-row">
+            <span class="pfc-title">PFCバランス</span>
+
+            <div class="ideal-pfc">
+              <span class="ideal-item ideal-protein">
+                <span class="ideal-dot"></span>
+                P 28%
+              </span>
+
+              <span class="ideal-item ideal-fat">
+                <span class="ideal-dot"></span>
+                F 25%
+              </span>
+
+              <span class="ideal-item ideal-carbs">
+                <span class="ideal-dot"></span>
+                C 47%
+              </span>
+            </div>
+          </div>
+
+          <div class="pfc-bar">
+            <div
+              id="todayPfcPBar"
+              class="pfc-segment pfc-protein"
+            ></div>
+
+            <div
+              id="todayPfcFBar"
+              class="pfc-segment pfc-fat"
+            ></div>
+
+            <div
+              id="todayPfcCBar"
+              class="pfc-segment pfc-carbs"
+            ></div>
+          </div>
+
+          <div class="pfc-legend">
+            <div class="pfc-legend-item">
+              <span class="actual-dot protein"></span>
+              P <strong id="todayPfcP">0</strong>%
             </div>
 
-            <div id="bodyStatus" class="status" role="status"></div>
-          </section>
+            <div class="pfc-legend-item">
+              <span class="actual-dot fat"></span>
+              F <strong id="todayPfcF">0</strong>%
+            </div>
 
-          <section class="card">
-            <div class="eyebrow">LATEST</div>
-            <h2>最新記録</h2>
-            <div id="bodyLatestBox" class="metric-row"></div>
-          </section>
+            <div class="pfc-legend-item">
+              <span class="actual-dot carbs"></span>
+              C <strong id="todayPfcC">0</strong>%
+            </div>
+          </div>
+        </div>
 
-          <section class="card">
-            <div class="eyebrow">7 DAYS</div>
-            <h2>直近7日平均</h2>
-            <div id="bodyAvgBox" class="metric-row"></div>
-          </section>
+        <div id="history" class="history"></div>
+      </section>
 
-          <section class="card">
-            <div class="eyebrow">HISTORY</div>
-            <h2>直近30日履歴</h2>
-            <div id="bodyHistory" class="day-list"></div>
-          </section>
-        </main>
-      </div>
-    </div>
+      <section class="card">
+        <div class="eyebrow">WEEK</div>
+        <h2>直近7日間</h2>
+
+        <div id="weekRange" class="range"></div>
+
+        <div class="totals">
+          <div class="total-box">
+            <div class="total-label">7日合計 kcal</div>
+            <div class="total-value">
+              <span id="weekCalories">0</span>
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">7日平均 kcal</div>
+            <div class="total-value">
+              <span id="avgCalories">0</span>
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">平均 P</div>
+            <div class="total-value">
+              <span id="avgProtein">0</span> g
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">平均 F / C</div>
+            <div class="total-value">
+              <span id="avgFat">0</span>/<span id="avgCarbs">0</span> g
+            </div>
+          </div>
+        </div>
+
+        <div class="pfc-balance">
+          <div class="pfc-title-row">
+            <span class="pfc-title">PFCバランス</span>
+
+            <div class="ideal-pfc">
+              <span class="ideal-item ideal-protein">
+                <span class="ideal-dot"></span>
+                P 28%
+              </span>
+
+              <span class="ideal-item ideal-fat">
+                <span class="ideal-dot"></span>
+                F 25%
+              </span>
+
+              <span class="ideal-item ideal-carbs">
+                <span class="ideal-dot"></span>
+                C 47%
+              </span>
+            </div>
+          </div>
+
+          <div class="pfc-bar">
+            <div
+              id="weekPfcPBar"
+              class="pfc-segment pfc-protein"
+            ></div>
+
+            <div
+              id="weekPfcFBar"
+              class="pfc-segment pfc-fat"
+            ></div>
+
+            <div
+              id="weekPfcCBar"
+              class="pfc-segment pfc-carbs"
+            ></div>
+          </div>
+
+          <div class="pfc-legend">
+            <div class="pfc-legend-item">
+              <span class="actual-dot protein"></span>
+              P <strong id="weekPfcP">0</strong>%
+            </div>
+
+            <div class="pfc-legend-item">
+              <span class="actual-dot fat"></span>
+              F <strong id="weekPfcF">0</strong>%
+            </div>
+
+            <div class="pfc-legend-item">
+              <span class="actual-dot carbs"></span>
+              C <strong id="weekPfcC">0</strong>%
+            </div>
+          </div>
+        </div>
+
+        <div id="dayList" class="day-list"></div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">BODY</div>
+        <h2>最新体組成</h2>
+
+        <div class="totals">
+          <div class="total-box">
+            <div class="total-label">体重</div>
+            <div class="total-value">
+              <span id="latestWeight">0</span> kg
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">体脂肪率</div>
+            <div class="total-value">
+              <span id="latestBodyFat">0</span> %
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">体脂肪量</div>
+            <div class="total-value">
+              <span id="latestFatMass">0</span> kg
+            </div>
+          </div>
+
+          <div class="total-box">
+            <div class="total-label">除脂肪体重</div>
+            <div class="total-value">
+              <span id="latestLeanMass">0</span> kg
+            </div>
+          </div>
+        </div>
+
+        <div id="bodyDiff" class="history"></div>
+      </section>
+    </main>
+
+    <!-- 体組成画面 -->
+    <main id="screenBody" class="screen">
+      <section class="card">
+        <div class="eyebrow">BODY INPUT</div>
+        <h1>体組成</h1>
+
+        <div class="grid">
+          <div>
+            <label for="weight">体重</label>
+
+            <div class="unit-wrap">
+              <input
+                id="weight"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                placeholder="0"
+              >
+              <span class="unit">kg</span>
+            </div>
+          </div>
+
+          <div>
+            <label for="bodyFat">体脂肪率</label>
+
+            <div class="unit-wrap">
+              <input
+                id="bodyFat"
+                type="number"
+                inputmode="decimal"
+                step="0.1"
+                placeholder="0"
+              >
+              <span class="unit">%</span>
+            </div>
+          </div>
+        </div>
+
+        <label for="bodyMemo">メモ</label>
+
+        <textarea
+          id="bodyMemo"
+          placeholder="例：朝、健康診断後、運動後"
+        ></textarea>
+
+        <button
+          id="saveBodyBtn"
+          class="primary orange"
+          type="button"
+        >
+          体組成を保存
+        </button>
+
+        <div class="actions single">
+          <button
+            id="refreshBodyBtn"
+            class="secondary cyan"
+            type="button"
+          >
+            体組成を更新
+          </button>
+        </div>
+
+        <div id="bodyStatus" class="status"></div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">LATEST</div>
+        <h2>最新記録</h2>
+        <div id="bodyLatestBox" class="metric-row"></div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">7 DAYS</div>
+        <h2>直近7日平均</h2>
+        <div id="bodyAvgBox" class="metric-row"></div>
+      </section>
+
+      <section class="card">
+        <div class="eyebrow">HISTORY</div>
+        <h2>直近30日履歴</h2>
+        <div id="bodyHistory" class="day-list"></div>
+      </section>
+    </main>
   </div>
 
   <script>
@@ -1111,41 +1185,13 @@
     let favoriteSearchText = '';
 
     const todayKey = () => {
-      const d = new Date();
-      const year = d.getFullYear();
-      const month = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
+      const date = new Date();
 
-      return `${year}-${month}-${day}`;
-    };
-
-    const numberValue = id => {
-      const element = document.getElementById(id);
-
-      if (!element || element.value === '') {
-        return 0;
-      }
-
-      return Number(element.value);
-    };
-
-    const fmtInt = number => {
-      return String(Math.round(Number(number || 0)));
-    };
-
-    const fmtOne = number => {
-      return Number(number || 0)
-        .toFixed(1)
-        .replace('.0', '');
-    };
-
-    const escapeHtml = string => {
-      return String(string || '')
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#039;');
+      return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0')
+      ].join('-');
     };
 
     const setText = (id, text) => {
@@ -1169,6 +1215,35 @@
         : 'status';
     };
 
+    const numberValue = id => {
+      const element = document.getElementById(id);
+
+      if (!element || element.value === '') {
+        return 0;
+      }
+
+      return Number(element.value);
+    };
+
+    const fmtInt = value => {
+      return String(Math.round(Number(value || 0)));
+    };
+
+    const fmtOne = value => {
+      return Number(value || 0)
+        .toFixed(1)
+        .replace('.0', '');
+    };
+
+    const escapeHtml = value => {
+      return String(value || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    };
+
     const postToGas = async payload => {
       const response = await fetch(GAS_URL, {
         method: 'POST',
@@ -1178,16 +1253,21 @@
       return await response.json();
     };
 
-    const calculatePfcBalance = (protein, fat, carbs) => {
-      const macroCalories = [
+    const calculatePfc = (
+      protein,
+      fat,
+      carbs
+    ) => {
+      const calories = [
         Math.max(0, Number(protein || 0)) * 4,
         Math.max(0, Number(fat || 0)) * 9,
         Math.max(0, Number(carbs || 0)) * 4
       ];
 
-      const total = macroCalories.reduce((sum, value) => {
-        return sum + value;
-      }, 0);
+      const total = calories.reduce(
+        (sum, value) => sum + value,
+        0
+      );
 
       if (total <= 0) {
         return {
@@ -1197,30 +1277,29 @@
         };
       }
 
-      const rawPercentages = macroCalories.map(value => {
-        return value / total * 100;
-      });
+      const raw = calories.map(
+        value => value / total * 100
+      );
 
-      const rounded = rawPercentages.map(value => {
-        return Math.floor(value);
-      });
+      const rounded = raw.map(
+        value => Math.floor(value)
+      );
 
-      let remainder =
+      const remainder =
         100 -
-        rounded.reduce((sum, value) => {
-          return sum + value;
-        }, 0);
+        rounded.reduce(
+          (sum, value) => sum + value,
+          0
+        );
 
-      const order = rawPercentages
-        .map((value, index) => {
-          return {
-            index,
-            fraction: value - Math.floor(value)
-          };
-        })
-        .sort((a, b) => {
-          return b.fraction - a.fraction;
-        });
+      const order = raw
+        .map((value, index) => ({
+          index,
+          fraction: value - Math.floor(value)
+        }))
+        .sort(
+          (a, b) => b.fraction - a.fraction
+        );
 
       for (let i = 0; i < remainder; i++) {
         rounded[order[i].index] += 1;
@@ -1233,59 +1312,87 @@
       };
     };
 
-    const renderPfcBalance = (prefix, totals = {}) => {
-      const balance = calculatePfcBalance(
+    const renderPfc = (
+      prefix,
+      totals = {}
+    ) => {
+      const balance = calculatePfc(
         totals.protein,
         totals.fat,
         totals.carbs
       );
 
-      setText(`${prefix}PfcP`, balance.protein);
-      setText(`${prefix}PfcF`, balance.fat);
-      setText(`${prefix}PfcC`, balance.carbs);
+      setText(
+        `${prefix}PfcP`,
+        balance.protein
+      );
 
-      const entries = [
-        ['P', balance.protein],
-        ['F', balance.fat],
-        ['C', balance.carbs]
-      ];
+      setText(
+        `${prefix}PfcF`,
+        balance.fat
+      );
 
-      entries.forEach(([key, value]) => {
-        const element = document.getElementById(
-          `${prefix}Pfc${key}Bar`
+      setText(
+        `${prefix}PfcC`,
+        balance.carbs
+      );
+
+      const proteinBar =
+        document.getElementById(
+          `${prefix}PfcPBar`
         );
 
-        if (element) {
-          element.style.width = `${value}%`;
-        }
-      });
+      const fatBar =
+        document.getElementById(
+          `${prefix}PfcFBar`
+        );
+
+      const carbsBar =
+        document.getElementById(
+          `${prefix}PfcCBar`
+        );
+
+      proteinBar.style.width =
+        `${balance.protein}%`;
+
+      fatBar.style.width =
+        `${balance.fat}%`;
+
+      carbsBar.style.width =
+        `${balance.carbs}%`;
     };
 
     const switchScreen = screen => {
-      const slides = document.getElementById('slides');
+      const screens = {
+        log: 'screenLog',
+        summary: 'screenSummary',
+        body: 'screenBody'
+      };
 
-      const tabMap = {
+      const tabs = {
         log: 'tabLog',
         summary: 'tabSummary',
         body: 'tabBody'
       };
 
-      slides.classList.remove(
-        'show-log',
-        'show-summary',
-        'show-body'
-      );
+      document
+        .querySelectorAll('.screen')
+        .forEach(element => {
+          element.classList.remove('active');
+        });
 
       document
         .querySelectorAll('.tab-btn')
-        .forEach(button => {
-          button.classList.remove('active');
+        .forEach(element => {
+          element.classList.remove('active');
         });
 
-      slides.classList.add(`show-${screen}`);
+      document
+        .getElementById(screens[screen])
+        .classList.add('active');
 
       document
-        .getElementById(tabMap[screen])
+        .getElementById(tabs[screen])
         .classList.add('active');
 
       if (screen === 'summary') {
@@ -1302,7 +1409,7 @@
       });
     };
 
-    const getCurrentMealInput = () => {
+    const currentMeal = () => {
       const food =
         document
           .getElementById('food')
@@ -1322,33 +1429,48 @@
       };
     };
 
-    const clearMealInput = () => {
-      const ids = [
+    const clearMeal = () => {
+      [
         'food',
         'calories',
         'protein',
         'fat',
         'carbs'
-      ];
-
-      ids.forEach(id => {
+      ].forEach(id => {
         document.getElementById(id).value = '';
       });
     };
 
-    const clearBodyInput = () => {
-      const ids = [
+    const clearBody = () => {
+      [
         'weight',
         'bodyFat',
         'bodyMemo'
-      ];
-
-      ids.forEach(id => {
+      ].forEach(id => {
         document.getElementById(id).value = '';
       });
     };
 
-    const fillInput = item => {
+    const setFavoritesOpen = open => {
+      favoritesOpen = open;
+
+      document
+        .getElementById('favoritesPanel')
+        .hidden = !open;
+
+      document
+        .getElementById('favoritesArrow')
+        .textContent = open ? '▼' : '▶';
+
+      document
+        .getElementById('favoritesToggle')
+        .setAttribute(
+          'aria-expanded',
+          String(open)
+        );
+    };
+
+    const fillFavorite = item => {
       document.getElementById('food').value =
         item.name || '';
 
@@ -1364,6 +1486,7 @@
       document.getElementById('carbs').value =
         item.carbs || '';
 
+      setFavoritesOpen(false);
       switchScreen('log');
 
       setStatus(
@@ -1404,68 +1527,43 @@
         return;
       }
 
-      box.innerHTML =
-        filtered
-          .map((item, index) => {
-            return `
-              <button
-                class="favorite-btn"
-                type="button"
-                data-index="${index}"
-              >
-                <div class="favorite-name">
-                  ${escapeHtml(item.name)}
-                  <span class="pill">
-                    ${item.calories || 0} kcal
-                  </span>
-                </div>
+      box.innerHTML = filtered
+        .map((item, index) => `
+          <button
+            class="favorite-btn"
+            type="button"
+            data-index="${index}"
+          >
+            <div class="favorite-name">
+              ${escapeHtml(item.name)}
+              <span class="pill">
+                ${item.calories || 0} kcal
+              </span>
+            </div>
 
-                <div class="favorite-macro">
-                  P ${item.protein || 0}g /
-                  F ${item.fat || 0}g /
-                  C ${item.carbs || 0}g
-                </div>
-
-                ${
-                  item.memo
-                    ? `<div class="favorite-macro">${escapeHtml(item.memo)}</div>`
-                    : ''
-                }
-              </button>
-            `;
-          })
-          .join('');
+            <div class="favorite-macro">
+              P ${item.protein || 0}g /
+              F ${item.fat || 0}g /
+              C ${item.carbs || 0}g
+            </div>
+          </button>
+        `)
+        .join('');
 
       box
         .querySelectorAll('.favorite-btn')
         .forEach(button => {
-          button.addEventListener('click', () => {
-            const index =
-              Number(button.dataset.index);
-
-            fillInput(filtered[index]);
-            setFavoritesOpen(false);
-          });
+          button.addEventListener(
+            'click',
+            () => {
+              fillFavorite(
+                filtered[
+                  Number(button.dataset.index)
+                ]
+              );
+            }
+          );
         });
-    };
-
-    const setFavoritesOpen = open => {
-      favoritesOpen = open;
-
-      document
-        .getElementById('favoritesPanel')
-        .hidden = !open;
-
-      document
-        .getElementById('favoritesArrow')
-        .textContent = open ? '▼' : '▶';
-
-      document
-        .getElementById('favoritesToggle')
-        .setAttribute(
-          'aria-expanded',
-          String(open)
-        );
     };
 
     const loadFavorites = async (
@@ -1513,8 +1611,6 @@
     };
 
     const renderToday = (today = {}) => {
-      const items = today.items || [];
-
       setText(
         'totalCalories',
         fmtInt(today.calories)
@@ -1535,8 +1631,9 @@
         fmtOne(today.carbs)
       );
 
-      renderPfcBalance('today', today);
+      renderPfc('today', today);
 
+      const items = today.items || [];
       const history =
         document.getElementById('history');
 
@@ -1547,27 +1644,23 @@
         return;
       }
 
-      history.innerHTML =
-        items
-          .slice()
-          .reverse()
-          .map(item => {
-            return `
-              <div class="history-item">
-                <strong>
-                  ${escapeHtml(item.mealType || '')}
-                </strong>
-                ：${escapeHtml(item.food || item.name || '')}
-                <br>
-
-                ${item.calories || 0} kcal /
-                P ${item.protein || 0}g /
-                F ${item.fat || 0}g /
-                C ${item.carbs || 0}g
-              </div>
-            `;
-          })
-          .join('');
+      history.innerHTML = items
+        .slice()
+        .reverse()
+        .map(item => `
+          <div class="history-item">
+            <strong>
+              ${escapeHtml(item.mealType || '')}
+            </strong>
+            ：${escapeHtml(item.food || item.name || '')}
+            <br>
+            ${item.calories || 0} kcal /
+            P ${item.protein || 0}g /
+            F ${item.fat || 0}g /
+            C ${item.carbs || 0}g
+          </div>
+        `)
+        .join('');
     };
 
     const renderWeek = (week = {}) => {
@@ -1605,79 +1698,76 @@
         fmtOne(averages.carbs)
       );
 
-      renderPfcBalance('week', totals);
+      renderPfc('week', totals);
 
-      const dayList =
+      const list =
         document.getElementById('dayList');
 
       if (!days.length) {
-        dayList.innerHTML =
+        list.innerHTML =
           '<div class="sub">直近7日間の記録はまだありません。</div>';
 
         return;
       }
 
-      dayList.innerHTML =
-        days
-          .slice()
-          .reverse()
-          .map(day => {
-            return `
-              <div class="day-item">
-                <div class="day-head">
-                  <span>
-                    ${escapeHtml(day.label || day.date)}
-                  </span>
+      list.innerHTML = days
+        .slice()
+        .reverse()
+        .map(day => `
+          <div class="day-item">
+            <div class="day-head">
+              <span>
+                ${escapeHtml(day.label || day.date)}
+              </span>
+              <span>
+                ${fmtInt(day.calories)} kcal
+              </span>
+            </div>
 
-                  <span>
-                    ${fmtInt(day.calories)} kcal
-                  </span>
-                </div>
-
-                <div class="day-macro">
-                  P ${fmtOne(day.protein)}g /
-                  F ${fmtOne(day.fat)}g /
-                  C ${fmtOne(day.carbs)}g
-                </div>
-              </div>
-            `;
-          })
-          .join('');
+            <div class="day-macro">
+              P ${fmtOne(day.protein)}g /
+              F ${fmtOne(day.fat)}g /
+              C ${fmtOne(day.carbs)}g
+            </div>
+          </div>
+        `)
+        .join('');
     };
 
-    const diffClass = number => {
-      if (Number(number) > 0) {
+    const differenceClass = value => {
+      if (Number(value) > 0) {
         return 'diff-plus';
       }
 
-      if (Number(number) < 0) {
+      if (Number(value) < 0) {
         return 'diff-minus';
       }
 
       return 'diff-flat';
     };
 
-    const diffText = (number, unit) => {
-      const value = Number(number || 0);
-      const sign = value > 0 ? '+' : '';
+    const differenceText = (
+      value,
+      unit
+    ) => {
+      const number = Number(value || 0);
+      const sign = number > 0 ? '+' : '';
 
-      return `${sign}${fmtOne(value)}${unit}`;
+      return `${sign}${fmtOne(number)}${unit}`;
     };
 
-    const renderBodySummary = (body = {}) => {
+    const renderBodySummary = (
+      body = {}
+    ) => {
       const latest = body.latest;
-      const avg7 = body.avg7;
-      const diff7 = body.diff7;
+      const average = body.avg7;
+      const difference = body.diff7;
 
       if (!latest) {
-        [
-          'latestWeight',
-          'latestBodyFat',
-          'latestFatMass',
-          'latestLeanMass'
-        ].forEach(id => {
-          setText(id, '0');
-        });
+        setText('latestWeight', '0');
+        setText('latestBodyFat', '0');
+        setText('latestFatMass', '0');
+        setText('latestLeanMass', '0');
 
         document
           .getElementById('bodyDiff')
@@ -1707,33 +1797,30 @@
         fmtOne(latest.leanMass)
       );
 
-      const averageHtml = avg7
+      const averageHtml = average
         ? `
           <div class="history-item">
             <strong>直近7日平均</strong>
             <br>
-
-            体重：${fmtOne(avg7.weight)} kg /
-            体脂肪率：${fmtOne(avg7.bodyFat)} %
+            体重：${fmtOne(average.weight)} kg /
+            体脂肪率：${fmtOne(average.bodyFat)} %
           </div>
         `
         : '';
 
-      const differenceHtml = diff7
+      const differenceHtml = difference
         ? `
           <div class="history-item">
             <strong>7日前比</strong>
             <br>
-
             体重：
-            <span class="${diffClass(diff7.weight)}">
-              ${diffText(diff7.weight, 'kg')}
+            <span class="${differenceClass(difference.weight)}">
+              ${differenceText(difference.weight, 'kg')}
             </span>
             <br>
-
             体脂肪率：
-            <span class="${diffClass(diff7.bodyFat)}">
-              ${diffText(diff7.bodyFat, '%')}
+            <span class="${differenceClass(difference.bodyFat)}">
+              ${differenceText(difference.bodyFat, '%')}
             </span>
           </div>
         `
@@ -1753,51 +1840,51 @@
         `;
     };
 
-    const renderBodyPage = (body = {}) => {
+    const renderBodyPage = (
+      body = {}
+    ) => {
       const latest = body.latest;
-      const avg7 = body.avg7;
+      const average = body.avg7;
       const records = body.records || [];
 
-      const latestBox =
-        document.getElementById('bodyLatestBox');
+      document
+        .getElementById('bodyLatestBox')
+        .innerHTML = latest
+          ? `
+            <div class="metric-card">
+              <div class="metric-main">
+                ${fmtOne(latest.weight)} kg
+              </div>
 
-      const averageBox =
-        document.getElementById('bodyAvgBox');
+              <div class="metric-sub">
+                ${fmtOne(latest.bodyFat)} % /
+                脂肪量 ${fmtOne(latest.fatMass)} kg /
+                除脂肪 ${fmtOne(latest.leanMass)} kg
+              </div>
+            </div>
+          `
+          : '<div class="sub">最新記録はまだありません。</div>';
+
+      document
+        .getElementById('bodyAvgBox')
+        .innerHTML = average
+          ? `
+            <div class="metric-card">
+              <div class="metric-main">
+                ${fmtOne(average.weight)} kg
+              </div>
+
+              <div class="metric-sub">
+                ${fmtOne(average.bodyFat)} % /
+                脂肪量 ${fmtOne(average.fatMass)} kg /
+                除脂肪 ${fmtOne(average.leanMass)} kg
+              </div>
+            </div>
+          `
+          : '<div class="sub">平均を出す記録がまだありません。</div>';
 
       const history =
         document.getElementById('bodyHistory');
-
-      latestBox.innerHTML = latest
-        ? `
-          <div class="metric-card">
-            <div class="metric-main">
-              ${fmtOne(latest.weight)} kg
-            </div>
-
-            <div class="metric-sub">
-              ${fmtOne(latest.bodyFat)} % /
-              脂肪量 ${fmtOne(latest.fatMass)} kg /
-              除脂肪 ${fmtOne(latest.leanMass)} kg
-            </div>
-          </div>
-        `
-        : '<div class="sub">最新記録はまだありません。</div>';
-
-      averageBox.innerHTML = avg7
-        ? `
-          <div class="metric-card">
-            <div class="metric-main">
-              ${fmtOne(avg7.weight)} kg
-            </div>
-
-            <div class="metric-sub">
-              ${fmtOne(avg7.bodyFat)} % /
-              脂肪量 ${fmtOne(avg7.fatMass)} kg /
-              除脂肪 ${fmtOne(avg7.leanMass)} kg
-            </div>
-          </div>
-        `
-        : '<div class="sub">平均を出す記録がまだありません。</div>';
 
       if (!records.length) {
         history.innerHTML =
@@ -1806,36 +1893,32 @@
         return;
       }
 
-      history.innerHTML =
-        records
-          .map(record => {
-            return `
-              <div class="day-item">
-                <div class="day-head">
-                  <span>
-                    ${escapeHtml(record.label || record.date)}
-                  </span>
+      history.innerHTML = records
+        .map(record => `
+          <div class="day-item">
+            <div class="day-head">
+              <span>
+                ${escapeHtml(record.label || record.date)}
+              </span>
+              <span>
+                ${fmtOne(record.weight)} kg
+              </span>
+            </div>
 
-                  <span>
-                    ${fmtOne(record.weight)} kg
-                  </span>
-                </div>
+            <div class="day-macro">
+              体脂肪率 ${fmtOne(record.bodyFat)} % /
+              脂肪量 ${fmtOne(record.fatMass)} kg /
+              除脂肪 ${fmtOne(record.leanMass)} kg
+            </div>
 
-                <div class="day-macro">
-                  体脂肪率 ${fmtOne(record.bodyFat)} % /
-                  脂肪量 ${fmtOne(record.fatMass)} kg /
-                  除脂肪 ${fmtOne(record.leanMass)} kg
-                </div>
-
-                ${
-                  record.memo
-                    ? `<div class="day-macro">${escapeHtml(record.memo)}</div>`
-                    : ''
-                }
-              </div>
-            `;
-          })
-          .join('');
+            ${
+              record.memo
+                ? `<div class="day-macro">${escapeHtml(record.memo)}</div>`
+                : ''
+            }
+          </div>
+        `)
+        .join('');
     };
 
     const loadSummary = async (
@@ -1963,253 +2046,282 @@
     document
       .querySelectorAll('.meal-btn')
       .forEach(button => {
-        button.addEventListener('click', () => {
-          document
-            .querySelectorAll('.meal-btn')
-            .forEach(item => {
-              item.classList.remove('active');
-            });
+        button.addEventListener(
+          'click',
+          () => {
+            document
+              .querySelectorAll('.meal-btn')
+              .forEach(item => {
+                item.classList.remove('active');
+              });
 
-          button.classList.add('active');
-          selectedMeal = button.dataset.meal;
-        });
-      });
-
-    document
-      .getElementById('saveBtn')
-      .addEventListener('click', async () => {
-        const button =
-          document.getElementById('saveBtn');
-
-        const data =
-          getCurrentMealInput();
-
-        if (!data.food) {
-          setStatus(
-            'status',
-            '食べたものを入力してください。',
-            'ng'
-          );
-
-          return;
-        }
-
-        button.disabled = true;
-
-        setStatus(
-          'status',
-          '保存中...'
-        );
-
-        try {
-          const result = await postToGas({
-            action: 'saveMeal',
-            ...data
-          });
-
-          if (!result.ok) {
-            throw new Error(
-              JSON.stringify(result)
-            );
+            button.classList.add('active');
+            selectedMeal =
+              button.dataset.meal;
           }
-
-          clearMealInput();
-          await loadSummary(false);
-
-          setStatus(
-            'status',
-            'Notionに保存しました。',
-            'ok'
-          );
-        } catch (error) {
-          console.error(error);
-
-          setStatus(
-            'status',
-            '保存に失敗しました。GAS URLやNotion設定を確認してください。',
-            'ng'
-          );
-        } finally {
-          button.disabled = false;
-        }
-      });
-
-    document
-      .getElementById('saveFavoriteBtn')
-      .addEventListener('click', async () => {
-        const button =
-          document.getElementById('saveFavoriteBtn');
-
-        const data =
-          getCurrentMealInput();
-
-        if (!data.food) {
-          setStatus(
-            'status',
-            'お気に入り名として、食べたものを入力してください。',
-            'ng'
-          );
-
-          return;
-        }
-
-        button.disabled = true;
-
-        setStatus(
-          'status',
-          'お気に入り登録中...'
         );
-
-        try {
-          const result = await postToGas({
-            action: 'saveFavorite',
-            name: data.food,
-            calories: data.calories,
-            protein: data.protein,
-            fat: data.fat,
-            carbs: data.carbs,
-            memo: ''
-          });
-
-          if (!result.ok) {
-            throw new Error(
-              JSON.stringify(result)
-            );
-          }
-
-          setStatus(
-            'status',
-            'お気に入りに登録しました。',
-            'ok'
-          );
-
-          await loadFavorites(false);
-          setFavoritesOpen(true);
-        } catch (error) {
-          console.error(error);
-
-          setStatus(
-            'status',
-            'お気に入り登録に失敗しました。',
-            'ng'
-          );
-        } finally {
-          button.disabled = false;
-        }
-      });
-
-    document
-      .getElementById('refreshFavoritesBtn')
-      .addEventListener('click', async () => {
-        setFavoritesOpen(true);
-        await loadFavorites(true);
       });
 
     document
       .getElementById('favoritesToggle')
-      .addEventListener('click', async () => {
-        setFavoritesOpen(!favoritesOpen);
+      .addEventListener(
+        'click',
+        async () => {
+          setFavoritesOpen(!favoritesOpen);
 
-        if (
-          favoritesOpen &&
-          favoritesCache.length === 0
-        ) {
-          await loadFavorites(false);
+          if (
+            favoritesOpen &&
+            favoritesCache.length === 0
+          ) {
+            await loadFavorites(false);
+          }
         }
-      });
+      );
 
     document
       .getElementById('favoriteSearch')
-      .addEventListener('input', event => {
-        favoriteSearchText =
-          event.target.value;
+      .addEventListener(
+        'input',
+        event => {
+          favoriteSearchText =
+            event.target.value;
 
-        renderFavorites();
-      });
+          renderFavorites();
+        }
+      );
+
+    document
+      .getElementById('refreshFavoritesBtn')
+      .addEventListener(
+        'click',
+        async () => {
+          setFavoritesOpen(true);
+          await loadFavorites(true);
+        }
+      );
+
+    document
+      .getElementById('saveFavoriteBtn')
+      .addEventListener(
+        'click',
+        async () => {
+          const button =
+            document.getElementById(
+              'saveFavoriteBtn'
+            );
+
+          const data = currentMeal();
+
+          if (!data.food) {
+            setStatus(
+              'status',
+              '食べたものを入力してください。',
+              'ng'
+            );
+
+            return;
+          }
+
+          button.disabled = true;
+
+          setStatus(
+            'status',
+            'お気に入り登録中...'
+          );
+
+          try {
+            const result = await postToGas({
+              action: 'saveFavorite',
+              name: data.food,
+              calories: data.calories,
+              protein: data.protein,
+              fat: data.fat,
+              carbs: data.carbs,
+              memo: ''
+            });
+
+            if (!result.ok) {
+              throw new Error(
+                JSON.stringify(result)
+              );
+            }
+
+            await loadFavorites(false);
+
+            setStatus(
+              'status',
+              'お気に入りに登録しました。',
+              'ok'
+            );
+          } catch (error) {
+            console.error(error);
+
+            setStatus(
+              'status',
+              'お気に入り登録に失敗しました。',
+              'ng'
+            );
+          } finally {
+            button.disabled = false;
+          }
+        }
+      );
+
+    document
+      .getElementById('saveBtn')
+      .addEventListener(
+        'click',
+        async () => {
+          const button =
+            document.getElementById('saveBtn');
+
+          const data = currentMeal();
+
+          if (!data.food) {
+            setStatus(
+              'status',
+              '食べたものを入力してください。',
+              'ng'
+            );
+
+            return;
+          }
+
+          button.disabled = true;
+
+          setStatus(
+            'status',
+            '保存中...'
+          );
+
+          try {
+            const result = await postToGas({
+              action: 'saveMeal',
+              ...data
+            });
+
+            if (!result.ok) {
+              throw new Error(
+                JSON.stringify(result)
+              );
+            }
+
+            clearMeal();
+            await loadSummary(false);
+
+            setStatus(
+              'status',
+              'Notionに保存しました。',
+              'ok'
+            );
+          } catch (error) {
+            console.error(error);
+
+            setStatus(
+              'status',
+              '保存に失敗しました。',
+              'ng'
+            );
+          } finally {
+            button.disabled = false;
+          }
+        }
+      );
 
     document
       .getElementById('refreshSummaryBtn')
-      .addEventListener('click', async () => {
-        await loadSummary(true);
-      });
+      .addEventListener(
+        'click',
+        async () => {
+          await loadSummary(true);
+        }
+      );
 
     document
       .getElementById('saveBodyBtn')
-      .addEventListener('click', async () => {
-        const button =
-          document.getElementById('saveBodyBtn');
-
-        const weight =
-          numberValue('weight');
-
-        const bodyFat =
-          numberValue('bodyFat');
-
-        const memo =
-          document
-            .getElementById('bodyMemo')
-            .value
-            .trim();
-
-        if (!weight && !bodyFat) {
-          setStatus(
-            'bodyStatus',
-            '体重か体脂肪率を入力してください。',
-            'ng'
-          );
-
-          return;
-        }
-
-        button.disabled = true;
-
-        setStatus(
-          'bodyStatus',
-          '体組成を保存中...'
-        );
-
-        try {
-          const result = await postToGas({
-            action: 'saveBodyRecord',
-            date: todayKey(),
-            weight,
-            bodyFat,
-            memo
-          });
-
-          if (!result.ok) {
-            throw new Error(
-              JSON.stringify(result)
+      .addEventListener(
+        'click',
+        async () => {
+          const button =
+            document.getElementById(
+              'saveBodyBtn'
             );
+
+          const weight =
+            numberValue('weight');
+
+          const bodyFat =
+            numberValue('bodyFat');
+
+          const memo =
+            document
+              .getElementById('bodyMemo')
+              .value
+              .trim();
+
+          if (!weight && !bodyFat) {
+            setStatus(
+              'bodyStatus',
+              '体重か体脂肪率を入力してください。',
+              'ng'
+            );
+
+            return;
           }
 
-          clearBodyInput();
-          await loadSummary(false);
-          await loadBodyRecords(false);
+          button.disabled = true;
 
           setStatus(
             'bodyStatus',
-            '体組成をNotionに保存しました。',
-            'ok'
+            '体組成を保存中...'
           );
-        } catch (error) {
-          console.error(error);
 
-          setStatus(
-            'bodyStatus',
-            '体組成の保存に失敗しました。',
-            'ng'
-          );
-        } finally {
-          button.disabled = false;
+          try {
+            const result = await postToGas({
+              action: 'saveBodyRecord',
+              date: todayKey(),
+              weight,
+              bodyFat,
+              memo
+            });
+
+            if (!result.ok) {
+              throw new Error(
+                JSON.stringify(result)
+              );
+            }
+
+            clearBody();
+            await loadSummary(false);
+            await loadBodyRecords(false);
+
+            setStatus(
+              'bodyStatus',
+              '体組成をNotionに保存しました。',
+              'ok'
+            );
+          } catch (error) {
+            console.error(error);
+
+            setStatus(
+              'bodyStatus',
+              '体組成の保存に失敗しました。',
+              'ng'
+            );
+          } finally {
+            button.disabled = false;
+          }
         }
-      });
+      );
 
     document
       .getElementById('refreshBodyBtn')
-      .addEventListener('click', async () => {
-        await loadBodyRecords(true);
-      });
+      .addEventListener(
+        'click',
+        async () => {
+          await loadBodyRecords(true);
+        }
+      );
 
     setFavoritesOpen(false);
     setText('summaryDate', todayKey());
